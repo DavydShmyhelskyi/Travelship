@@ -14,7 +14,7 @@ namespace Domain.Places
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
         //PlacePhotos
-        public IEnumerable<PlacePhoto> PlacePhotos { get; set; }
+        public IEnumerable<PlacePhoto> PlacePhotos { get; set; } = new List<PlacePhoto>();
 
         private Place(Guid id, string title, double latitude, double longitude)
         {

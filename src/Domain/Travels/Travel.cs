@@ -1,10 +1,5 @@
 ﻿using Domain.Users;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Travels
 {
@@ -19,9 +14,9 @@ namespace Domain.Travels
         public bool IsDone { get; private set; }
         //user
         public Guid UserId { get; private set; }
-        public User user { get; private set; }
+        public User? user { get; private set; }
         // members
-        public IEnumerable<User> Members { get; set; }
+        public IEnumerable<User> Members { get; set; } = new List<User>();
 
         private Travel(Guid id, string title, DateTime startDate, DateTime endDate, string description, byte[]? image, bool isDone, Guid userId)
         {

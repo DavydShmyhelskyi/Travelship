@@ -18,14 +18,14 @@ namespace Domain.Users
         public DateTime CreatedAt { get; }
         //Role
         public Guid RoleId { get; private set; }
-        public Role Role { get; private set; }
+        public Role? Role { get; private set; }
         //City
         public Guid? CityId { get; private set; }
         public City? City { get; private set; }
         //Travels
-        public IEnumerable<Travel> Travels { get; set; }
+        public IEnumerable<Travel> Travels { get; set; } = new List<Travel>();
         //MemberTravels
-        public IEnumerable<Travel> MemberTravels { get; set; }
+        public IEnumerable<Travel> MemberTravels { get; set; } = new List<Travel>();
 
         private User(Guid id, string nickName, string email, string password, Guid roleId, Guid? cityId)
         {

@@ -1,9 +1,4 @@
 ﻿using Domain.Places;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.PlacePhotos
 {
@@ -15,7 +10,7 @@ namespace Domain.PlacePhotos
         public bool IsShown { get; private set; }
         //Place
         public Guid PlaceId { get; private set; }
-        public Place Place { get; private set; }
+        public Place? Place { get; private set; }
 
         private PlacePhoto(Guid id, byte[] photo, string description, Guid placeId)
         {

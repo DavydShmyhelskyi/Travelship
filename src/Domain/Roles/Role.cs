@@ -1,9 +1,4 @@
 ﻿using Domain.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Roles
 {
@@ -11,7 +6,7 @@ namespace Domain.Roles
     {
         public Guid Id { get; }
         public string Title { get; private set; }
-        public IEnumerable<User> Users { get; set; }
+        public IEnumerable<User> Users { get; set; } = new List<User>();
 
         private Role(Guid id, string title)
         {

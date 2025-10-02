@@ -1,9 +1,4 @@
 ﻿using Domain.Cities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Countries
 {
@@ -11,7 +6,7 @@ namespace Domain.Countries
     {
         public Guid Id { get; }
         public string Title { get; private set; }
-        IEnumerable<City> Cities { get; set; }
+        IEnumerable<City> Cities { get; set; } = new List<City>();
         private Country(Guid id, string title)
         {
             Id = id;

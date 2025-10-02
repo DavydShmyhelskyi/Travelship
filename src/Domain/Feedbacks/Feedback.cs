@@ -1,10 +1,5 @@
 ﻿using Domain.Places;
 using Domain.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Feedbacks
 {
@@ -14,11 +9,12 @@ namespace Domain.Feedbacks
         public string Comment { get; private set; }
         public int Rating { get; private set; } 
         public DateTime Date { get; private set; }
+        public DateTime? UpdatedAt { get; private set; }
         //User
-        public User User { get; private set; }
+        public User? User { get; private set; }
         public Guid UserId { get; private set; }
         //Place
-        public Place Place { get; private set; }
+        public Place? Place { get; private set; }
         public Guid PlaceId { get; private set; }
 
         private Feedback(Guid id, string comment, int rating, DateTime date, Guid userId, Guid placeId)
@@ -29,6 +25,7 @@ namespace Domain.Feedbacks
             Date = date;
             UserId = userId;
             PlaceId = placeId;
+            UpdatedAt = null;
         }
         public static Feedback New(string comment, int rating, Guid userId, Guid placeId)
         {
@@ -38,7 +35,7 @@ namespace Domain.Feedbacks
         {
             Comment = comment;
             Rating = rating;
-            Date = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
     }
 }

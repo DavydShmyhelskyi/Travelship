@@ -1,10 +1,5 @@
 ﻿using Domain.Countries;
 using Domain.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Cities
 {
@@ -14,9 +9,9 @@ namespace Domain.Cities
         public string Title { get; private set; }
         //Country
         public Guid CountryId { get; private set; }
-        public Country Country { get; private set; }
+        public Country? Country { get; private set; }
         //Users
-        public IEnumerable<User> Users { get; set; }
+        public IEnumerable<User> Users { get; set; } = new List<User>();
 
         private City(Guid id, string title, Guid countryId)
         {
