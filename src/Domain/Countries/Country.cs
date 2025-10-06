@@ -6,7 +6,7 @@ namespace Domain.Countries
     {
         public Guid Id { get; }
         public string Title { get; private set; }
-        IEnumerable<City> Cities { get; set; } = new List<City>();
+        public IEnumerable<City> Cities { get; set; } = new List<City>();
         private Country(Guid id, string title)
         {
             Id = id;
