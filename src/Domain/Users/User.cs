@@ -27,19 +27,20 @@ namespace Domain.Users
         //MemberTravels
         public IEnumerable<Travel> MemberTravels { get; set; } = new List<Travel>();
 
-        private User(Guid id, string nickName, string email, string password, Guid roleId, Guid? cityId)
+        private User(Guid id, string nickName, string email, string passwordHash, Guid roleId, Guid? cityId)
         {
             Id = id;
             NickName = nickName;
             Email = email;
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+            PasswordHash = passwordHash;
+                //BCrypt.Net.BCrypt.HashPassword(password);
             CreatedAt = DateTime.UtcNow;
             RoleId = roleId;
             CityId = cityId;
         }
         public static User New(string nickName, string email, string password, Guid roleId, Guid? cityId)
         {
-            return new User(Guid.NewGuid(), nickName, email, password, roleId, cityId);
+            return new User(Guid.NewGuid(), nickName, email, BCrypt.Net.BCrypt.HashPassword(password), roleId, cityId);
         }
         public void Update(string nickName, string email, Guid roleId, Guid? cityId)
         {
