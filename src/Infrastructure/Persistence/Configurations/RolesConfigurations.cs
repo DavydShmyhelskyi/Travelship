@@ -14,6 +14,9 @@ public class RolesConfiguration : IEntityTypeConfiguration<Role>
             .HasColumnType("varchar(100)")
             .IsRequired();
 
+        builder.HasIndex(x => x.Title)
+            .IsUnique();
+
         builder.HasMany(x => x.Users)
             .WithOne(x => x.Role)
             .HasForeignKey(x => x.RoleId);

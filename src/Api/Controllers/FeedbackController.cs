@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class FeedbacksController(
     IFeedbackQueries feedbackQueries,
-    IValidator<CreateFeedbackDto> createFeedbackDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class FeedbacksController(
         [FromBody] CreateFeedbackDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createFeedbackDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreateFeedbackCommand
         {

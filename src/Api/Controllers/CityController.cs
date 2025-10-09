@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class CitiesController(
     ICityQueries cityQueries,
-    IValidator<CreateCityDto> createCityDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class CitiesController(
         [FromBody] CreateCityDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createCityDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreateCityCommand
         {

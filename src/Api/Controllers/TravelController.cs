@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class TravelsController(
     ITravelQueries travelQueries,
-    IValidator<CreateTravelDto> createTravelDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class TravelsController(
         [FromBody] CreateTravelDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createTravelDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreateTravelCommand
         {

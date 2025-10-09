@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class CountriesController(
     ICountryQueries countryQueries,
-    IValidator<CreateCountryDto> createCountryDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class CountriesController(
         [FromBody] CreateCountryDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createCountryDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreateCountryCommand
         {

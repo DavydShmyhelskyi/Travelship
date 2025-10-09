@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class PlacePhotosController(
     IPlacePhotoQueries placePhotoQueries,
-    IValidator<CreatePlacePhotoDto> createPlacePhotoDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class PlacePhotosController(
         [FromBody] CreatePlacePhotoDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createPlacePhotoDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreatePlacePhotoCommand
         {

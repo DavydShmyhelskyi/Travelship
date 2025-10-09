@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class RolesController(
     IRoleQueries roleQueries,
-    IValidator<CreateRoleDto> createRoleDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class RolesController(
         [FromBody] CreateRoleDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createRoleDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreateRoleCommand
         {

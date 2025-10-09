@@ -13,6 +13,8 @@ public class CountriesConfiguration : IEntityTypeConfiguration<Country>
         builder.Property(x => x.Title)
             .HasColumnType("varchar(255)")
             .IsRequired();
+        builder.HasIndex(x => x.Title)
+            .IsUnique();
 
         builder.HasMany(x => x.Cities)
             .WithOne(x => x.Country)

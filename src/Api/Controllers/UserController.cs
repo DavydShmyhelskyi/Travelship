@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class UsersController(
     IUserQueries userQueries,
-    IValidator<CreateUserDto> createUserDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class UsersController(
         [FromBody] CreateUserDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createUserDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreateUserCommand
         {

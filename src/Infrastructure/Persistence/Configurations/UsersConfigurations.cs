@@ -15,6 +15,9 @@ public class UsersConfiguration : IEntityTypeConfiguration<User>
             .HasColumnType("varchar(100)")
             .IsRequired();
 
+        builder.HasIndex(x => x.NickName)
+            .IsUnique();
+
         builder.Property(x => x.Email)
             .HasColumnType("varchar(255)")
             .IsRequired();

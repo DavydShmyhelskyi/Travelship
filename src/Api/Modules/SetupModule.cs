@@ -1,3 +1,4 @@
+using Api.Filter;
 using FluentValidation;
 
 namespace Api.Modules;
@@ -6,7 +7,10 @@ public static class SetupModule
 {
     public static void SetupServices(this IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<ValidationFilter>();
+        });
         services.AddCors();
         services.AddRequestValidators();
     }

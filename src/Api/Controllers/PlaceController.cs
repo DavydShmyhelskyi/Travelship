@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class PlacesController(
     IPlaceQueries placeQueries,
-    IValidator<CreatePlaceDto> createPlaceDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class PlacesController(
         [FromBody] CreatePlaceDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createPlaceDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreatePlaceCommand
         {

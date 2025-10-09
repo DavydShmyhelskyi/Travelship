@@ -11,7 +11,6 @@ namespace Api.Controllers;
 [ApiController]
 public class FollowersController(
     IFolowerQueries followerQueries,
-    IValidator<CreateFollowerDto> createFollowerDtoValidator,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -26,8 +25,6 @@ public class FollowersController(
         [FromBody] CreateFollowerDto request,
         CancellationToken cancellationToken)
     {
-        var validationResult = createFollowerDtoValidator.Validate(request);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
         var input = new CreateFollowerCommand
         {
