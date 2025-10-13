@@ -1,61 +1,52 @@
 ﻿using Domain.Cities;
 using Domain.Roles;
 using Domain.Travels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Users
 {
     public class User
     {
-        public Guid Id { get; }
+        public UserId Id { get; }
         public string NickName { get; private set; }
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
         public DateTime CreatedAt { get; }
-        //Role
-        public Guid RoleId { get; private set; }
-        public Role? Role { get; private set; }
-        //City
-        public Guid? CityId { get; private set; }
-        public City? City { get; private set; }
-        //Travels
-        public IEnumerable<Travel> Travels { get; set; } = new List<Travel>();
-        //MemberTravels
-        public IEnumerable<Travel> MemberTravels { get; set; } = new List<Travel>();
 
-        private User(Guid id, string nickName, string email, string passwordHash, Guid roleId, Guid? cityId)
+        public RoleId RoleId { get; private set; }
+        public Role? Role { get; private set; }
+
+        public CityId? CityId { get; private set; }
+        public City? City { get; private set; }
+
+        public IEnumerable<Travel> Travels { get; private set; } = new List<Travel>();
+        public IEnumerable<Travel> MemberTravels { get; private set; } = new List<Travel>();
+
+        private User(UserId id, string nickName, string email, string passwordHash, RoleId roleId, CityId? cityId)
         {
             Id = id;
             NickName = nickName;
             Email = email;
             PasswordHash = passwordHash;
-                //BCrypt.Net.BCrypt.HashPassword(password);
             CreatedAt = DateTime.UtcNow;
             RoleId = roleId;
             CityId = cityId;
         }
-        public static User New(string nickName, string email, string password, Guid roleId, Guid? cityId)
-        {
-            return new User(Guid.NewGuid(), nickName, email, BCrypt.Net.BCrypt.HashPassword(password), roleId, cityId);
-        }
-        public void Update(string nickName, string email, Guid roleId, Guid? cityId)
+
+        public static User New(string nickName, string email, string password, RoleId roleId, CityId? cityId)
+            => new(UserId.New(), nickName, email, BCrypt.Net.BCrypt.HashPassword(password), roleId, cityId);
+
+        public void Update(string nickName, string email, RoleId roleId, CityId? cityId)
         {
             NickName = nickName;
-            Email = email;            
+            Email = email;
             RoleId = roleId;
             CityId = cityId;
         }
+
         public void ChangePassword(string newPassword)
-        {
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
-        }
+            => PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
         public bool VerifyPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.Verify(password, PasswordHash);
-        }
+            => BCrypt.Net.BCrypt.Verify(password, PasswordHash);
     }
 }

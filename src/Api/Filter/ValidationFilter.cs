@@ -10,37 +10,41 @@ namespace Api.Filter
         {
             foreach (var argument in context.ActionArguments)
             {
-                if (argument.Value is null)
-                { 
+                if (argument.Value == null)
+                {
                     continue;
                 }
-                var argumentType = argument.Value.GetType();
-                var validatorType = typeof(FluentValidation.IValidator<>).MakeGenericType(argumentType);
 
-                if(serviceProvider.GetService(validatorType) is IValidator validator)
+                var argumentType = argument.Value.GetType();
+                var validatorType = typeof(IValidator<>).MakeGenericType(argumentType);
+
+                if (serviceProvider.GetService(validatorType) is IValidator validator)
                 {
                     var validationContext = new ValidationContext<object>(argument.Value);
                     var validationResult = await validator.ValidateAsync(validationContext);
+
                     if (!validationResult.IsValid)
                     {
                         var errors = validationResult.Errors
-                            .GroupBy(e => e.PropertyName)
+                            .GroupBy(x => x.PropertyName)
                             .ToDictionary(
                                 g => g.Key,
-                                g => g.Select(e => e.ErrorMessage).ToArray()
-                            );
-                        context.Result = new BadRequestObjectResult(new ValidationProblemDetails
-                        {
+                                g => g.Select(x => x.ErrorMessage).ToArray());
 
-                            Errors = errors,
-                            Detail = "One or more validation errors occurred.",
-                            Title = "ValidationFailed",
-                            Status = 400
-                        });
+                        context.Result = new BadRequestObjectResult(
+                            new ValidationProblemDetails
+                            {
+                                Errors = errors,
+                                Title = "Validation Failed",
+                                Detail = "One or more validation errors occurred.",
+                                Status = 400
+                            });
+
+                        return;
                     }
                 }
             }
-            
+
             await next();
         }
     }

@@ -4,21 +4,21 @@ namespace Domain.Countries
 {
     public class Country
     {
-        public Guid Id { get; }
+        public CountryId Id { get; }
         public string Title { get; private set; }
-        public IEnumerable<City> Cities { get; set; } = new List<City>();
-        private Country(Guid id, string title)
+
+        public IEnumerable<City> Cities { get; private set; } = new List<City>();
+
+        private Country(CountryId id, string title)
         {
             Id = id;
             Title = title;
         }
+
         public static Country New(string title)
-        {
-            return new Country(Guid.NewGuid(), title);
-        }
+            => new(CountryId.New(), title);
+
         public void ChangeTitle(string title)
-        {
-            Title = title;
-        }
+            => Title = title;
     }
 }

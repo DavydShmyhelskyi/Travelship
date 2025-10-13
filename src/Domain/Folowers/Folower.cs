@@ -1,28 +1,29 @@
 ﻿using Domain.Users;
 
-namespace Domain.Folowers
+namespace Domain.Followers
 {
-    public class Folower
+    public class Follower
     {
         public DateTime Date { get; }
 
         // User who follows
-        public Guid FollowerId { get; }
-        public User? Follower { get; }
+        public UserId FollowerUserId { get; }
+        public User? FollowerUser { get; }
 
         // User being followed
-        public Guid FollowedId { get; }
-        public User? Followed { get; }
+        public UserId FollowedUserId { get; }
+        public User? FollowedUser { get; }
 
-        private Folower(DateTime date, Guid followerId, Guid followedId)
+        private Follower(DateTime date, UserId followerUserId, UserId followedUserId)
         {
             Date = date;
-            FollowerId = followerId;
-            FollowedId = followedId;
+            FollowerUserId = followerUserId;
+            FollowedUserId = followedUserId;
         }
-        public static Folower New(Guid followerId, Guid followedId)
+
+        public static Follower New(UserId followerUserId, UserId followedUserId)
         {
-            return new Folower(DateTime.UtcNow, followerId, followedId);
+            return new Follower(DateTime.UtcNow, followerUserId, followedUserId);
         }
     }
 }

@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.PlacePhotos;
+﻿using Domain.PlacePhotos;
 
 namespace Domain.Places
 {
     public class Place
     {
-        public Guid Id { get; }
+        public PlaceId Id { get; }
         public string Title { get; private set; }
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
-        //PlacePhotos
-        public IEnumerable<PlacePhoto> PlacePhotos { get; set; } = new List<PlacePhoto>();
 
-        private Place(Guid id, string title, double latitude, double longitude)
+        public IEnumerable<PlacePhoto> PlacePhotos { get; private set; } = new List<PlacePhoto>();
+
+        private Place(PlaceId id, string title, double latitude, double longitude)
         {
             Id = id;
             Title = title;
             Latitude = latitude;
             Longitude = longitude;
         }
+
         public static Place New(string title, double latitude, double longitude)
-        {
-            return new Place(Guid.NewGuid(), title, latitude, longitude);
-        }
+            => new(PlaceId.New(), title, latitude, longitude);
+
         public void Update(string title, double latitude, double longitude)
         {
             Title = title;

@@ -5,19 +5,19 @@ namespace Domain.Feedbacks
 {
     public class Feedback
     {
-        public Guid Id { get; }
+        public FeedbackId Id { get; }
         public string Comment { get; private set; }
-        public int Rating { get; private set; } 
+        public int Rating { get; private set; }
         public DateTime Date { get; private set; }
         public DateTime? UpdatedAt { get; private set; }
-        //User
-        public User? User { get; private set; }
-        public Guid UserId { get; private set; }
-        //Place
-        public Place? Place { get; private set; }
-        public Guid PlaceId { get; private set; }
 
-        private Feedback(Guid id, string comment, int rating, DateTime date, Guid userId, Guid placeId)
+        public UserId UserId { get; private set; }
+        public User? User { get; private set; }
+
+        public PlaceId PlaceId { get; private set; }
+        public Place? Place { get; private set; }
+
+        private Feedback(FeedbackId id, string comment, int rating, DateTime date, UserId userId, PlaceId placeId)
         {
             Id = id;
             Comment = comment;
@@ -25,12 +25,11 @@ namespace Domain.Feedbacks
             Date = date;
             UserId = userId;
             PlaceId = placeId;
-            UpdatedAt = null;
         }
-        public static Feedback New(string comment, int rating, Guid userId, Guid placeId)
-        {
-            return new Feedback(Guid.NewGuid(), comment, rating, DateTime.UtcNow, userId, placeId);
-        }
+
+        public static Feedback New(string comment, int rating, UserId userId, PlaceId placeId)
+            => new(FeedbackId.New(), comment, rating, DateTime.UtcNow, userId, placeId);
+
         public void Update(string comment, int rating)
         {
             Comment = comment;
