@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace Application.Entities.Roles.Commands
+namespace Application.Entities.Roles.Commands;
+
+public class DeleteRoleCommandValidator : AbstractValidator<DeleteRoleCommand>
 {
-    internal class DeleteRolesCommandValidator
+    public DeleteRoleCommandValidator()
     {
+        RuleFor(x => x.RoleId).NotEmpty();
     }
 }

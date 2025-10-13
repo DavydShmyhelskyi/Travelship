@@ -25,7 +25,7 @@ public class CountryRepository : ICountryRepository, ICountryQueries
 
     public async Task<IReadOnlyList<Country>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _context.Countries.ToListAsync(cancellationToken); 
+        return await _context.Countries.AsNoTracking().ToListAsync(cancellationToken); 
     }
 
 

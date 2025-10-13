@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace Application.Entities.Roles.Commands
+namespace Application.Entities.Roles.Commands;
+
+public class UpdateRoleCommandValidator : AbstractValidator<UpdateRoleCommand>
 {
-    internal class UpdateRoleCommandValidator
+    public UpdateRoleCommandValidator()
     {
+        RuleFor(x => x.RoleId).NotEmpty();
+        RuleFor(x => x.Title)
+                 .NotEmpty().WithMessage("Title is required.")
+                 .MinimumLength(3).WithMessage("Title must be at least 3 characters.")
+                 .MaximumLength(255).WithMessage("Title must be less then 255 characters");
+
     }
 }

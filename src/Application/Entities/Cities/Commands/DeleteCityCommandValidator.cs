@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace Application.Entities.Cities.Commands
+namespace Application.Entities.Cities.Commands;
+
+public class DeleteCityCommandValidator : AbstractValidator<DeleteCityCommand>
 {
-    internal class DeleteCityCommandValidator
+    public DeleteCityCommandValidator()
     {
+        RuleFor(x => x.CityId).NotEmpty();
     }
 }

@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace Application.Entities.Cities.Commands
+namespace Application.Entities.Cities.Commands;
+
+public class UpdateCityCommandValidator : AbstractValidator<UpdateCityCommand>
 {
-    internal class UpdateCityCommandValidator
+    public UpdateCityCommandValidator()
     {
+        RuleFor(x => x.CityId).NotEmpty();
+        RuleFor(x => x.CountryId).NotEmpty();
+
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage("Title is required.")
+            .MinimumLength(3).WithMessage("Title must be at least 3 characters.")
+            .MaximumLength(255).WithMessage("Title must be less than 255 characters.");
     }
 }
