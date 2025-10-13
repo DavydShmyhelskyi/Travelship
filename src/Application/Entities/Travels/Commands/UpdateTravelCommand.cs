@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace Application.Entities.Travels.Commands
 {
-    internal class UpdateTravelCommand
+    public class UpdateTravelCommand
     {
     }
 }
