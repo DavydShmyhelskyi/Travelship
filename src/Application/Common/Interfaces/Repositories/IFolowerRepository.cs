@@ -1,15 +1,14 @@
-﻿using Domain.Cities;
-using Domain.Folowers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Followers;
+using Domain.Users;
+using LanguageExt;
 
 namespace Application.Common.Interfaces.Repositories
 {
     public interface IFolowerRepository
     {
-        Task<Folower> AddAsync(Folower entity, CancellationToken cancellationToken);
+        Task<Follower> AddAsync(Follower entity, CancellationToken cancellationToken);
+        Task<Follower> DeleteAsync(Follower entity, CancellationToken cancellationToken);
+        Task<Option<Follower>> GetAllFolloversAsync(UserId id, CancellationToken cancellationToken);
+        Task<Option<Follower>> GetAllFollovingsAsync(UserId id, CancellationToken cancellationToken);
     }
 }

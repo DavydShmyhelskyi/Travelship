@@ -1,4 +1,6 @@
 ﻿using Application.Common.Interfaces.Repositories;
+using Domain.Cities;
+using Domain.Roles;
 using Domain.Users;
 using MediatR;
 
@@ -10,8 +12,8 @@ public class CreateUserCommand : IRequest<User>
     public required string Email { get; set; }
     public required string Password { get; set; }
 
-    public required Guid RoleId { get; set; }   
-    public Guid? CityId { get; set; }
+    public required RoleId RoleId { get; set; }   
+    public CityId? CityId { get; set; }
 }
 
 public class CreateUserCommandHandler(IUserRepository userRepository) : IRequestHandler<CreateUserCommand, User>

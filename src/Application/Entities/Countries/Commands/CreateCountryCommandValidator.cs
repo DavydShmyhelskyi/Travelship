@@ -1,5 +1,4 @@
-﻿using Application.Common.Interfaces.Repositories;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Application.Entities.Countries.Commands
 {
