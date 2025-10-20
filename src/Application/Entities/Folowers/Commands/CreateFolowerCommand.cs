@@ -1,20 +1,57 @@
 ﻿using Application.Common.Interfaces.Repositories;
-using Domain.Folowers;
+using Application.Entities.Followers.Exceptions;
+using Domain.Followers;
+using Domain.Users;
+using LanguageExt;
 using MediatR;
 
-namespace Application.Entities.Folowers.Commands;
+namespace Application.Entities.Followers.Commands;
 
-public class CreateFollowerCommand : IRequest<Folower>
+public record CreateFollowerCommand : IRequest<Either<FollowerException, Follower>>
 {
-    public required Guid FollowerId { get; set; }
-    public required Guid FollowedId { get; set; }
+    public required Guid FollowerUserId { get; init; }
+    public required Guid FollowedUserId { get; init; }
 }
-public class CreateFollowerCommandHandler(IFolowerRepository folowerRepository)
-    : IRequestHandler<CreateFollowerCommand, Folower>
+
+public class CreateFollowerCommandHandler(IFollowerRepository followerRepository)
+    : IRequestHandler<CreateFollowerCommand, Either<FollowerException, Follower>>
 {
-    public async Task<Folower> Handle(CreateFollowerCommand request, CancellationToken cancellationToken)
+    public async Task<Either<FollowerException, Follower>> Handle(
+        CreateFollowerCommand request,
+        CancellationToken cancellationToken)
     {
-        var folower = Folower.New(request.FollowerId, request.FollowedId);
-        return await folowerRepository.AddAsync(folower, cancellationToken);
+        var followerId = new UserId(request.FollowerUserId);
+        var followedId = new UserId(request.FollowedUserId);
+
+        if (followerId == followedId)
+        {
+            return new CannotFollowYourselfException(followerId);
+        }
+
+        var existing = await followerRepository.GetByIdsAsync(followerId, followedId, cancellationToken);
+
+        if (existing is not null)
+        {
+            return new FollowerAlreadyExistException(followerId, followedId);
+        }
+
+        return await CreateEntity(followerId, followedId, cancellationToken);
+    }
+
+    private async Task<Either<FollowerException, Follower>> CreateEntity(
+        UserId followerId,
+        UserId followedId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var follower = Follower.New(followerId, followedId);
+            var created = await followerRepository.AddAsync(follower, cancellationToken);
+            return created;
+        }
+        catch (Exception ex)
+        {
+            return new UnhandledFollowerException(followerId, followedId, ex);
+        }
     }
 }

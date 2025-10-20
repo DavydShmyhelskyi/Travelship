@@ -1,12 +1,5 @@
-﻿using Domain.Cities;
-using Domain.PlacePhotos;
+﻿using Domain.PlacePhotos;
 using LanguageExt;
-using LanguageExt.ClassInstances;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Common.Interfaces.Repositories
 {

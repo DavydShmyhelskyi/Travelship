@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using FluentValidation;
 
 namespace Application.Entities.PlacePhotos.Commands
 {
-    internal class DeletePlacePhotoCommandValidator
+    public class DeletePlacePhotoCommandValidator : AbstractValidator<DeletePlacePhotoCommand>
     {
+        public DeletePlacePhotoCommandValidator()
+        {
+            RuleFor(x => x.PlacePhotoId)
+                .NotEmpty().WithMessage("PlacePhotoId is required.");
+        }
     }
 }

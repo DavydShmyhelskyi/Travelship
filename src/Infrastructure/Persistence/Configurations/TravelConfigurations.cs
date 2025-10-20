@@ -35,12 +35,7 @@ public class TravelsConfiguration : IEntityTypeConfiguration<Travel>
             .HasDefaultValue(false)
             .IsRequired();
 
-        builder.HasOne(x => x.user)
-            .WithMany(x => x.Travels)
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(x => x.Members)
-            .WithMany(x => x.MemberTravels);
+        builder.Property(x => x.UserId)
+            .IsRequired();
     }
 }

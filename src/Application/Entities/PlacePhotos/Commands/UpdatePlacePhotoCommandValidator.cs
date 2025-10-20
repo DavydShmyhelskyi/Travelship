@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace Application.Entities.PlacePhotos.Commands
+namespace Application.Entities.PlacePhotos.Commands;
+
+public class UpdatePlacePhotoCommandValidator : AbstractValidator<UpdatePlacePhotoCommand>
 {
-    internal class UpdatePlacePhotoCommandValidator
+    public UpdatePlacePhotoCommandValidator()
     {
+        RuleFor(x => x.Photo)
+            .NotEmpty().WithMessage("Photo is required.");
+
+        RuleFor(x => x.Description)
+            .MaximumLength(500).WithMessage("Description must be less than 500 characters.");
     }
 }

@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Entities.Places.Commands;
+using FluentValidation;
 
 namespace Application.Entities.Roles.Commands
 {
-    internal class DeletePlaceCommandValidator
+    public class DeletePlaceCommandValidator :  AbstractValidator<DeletePlaceCommand>
     {
+        public DeletePlaceCommandValidator()
+        {
+            RuleFor(x => x.PlaceId)
+                .NotEmpty().WithMessage("PlaceId is required.");
+        }
     }
 }

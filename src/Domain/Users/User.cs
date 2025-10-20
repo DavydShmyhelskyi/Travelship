@@ -8,6 +8,7 @@ namespace Domain.Users
     {
         public UserId Id { get; }
         public string NickName { get; private set; }
+        public byte[]? Avatar { get; private set; }
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
         public DateTime CreatedAt { get; }
@@ -17,14 +18,14 @@ namespace Domain.Users
 
         public CityId? CityId { get; private set; }
         public City? City { get; private set; }
+        
+        public ICollection<UserTravel>? Travels { get; private set; } = new List<UserTravel>();
 
-        public IEnumerable<Travel> Travels { get; private set; } = new List<Travel>();
-        public IEnumerable<Travel> MemberTravels { get; private set; } = new List<Travel>();
-
-        private User(UserId id, string nickName, string email, string passwordHash, RoleId roleId, CityId? cityId)
+        private User(UserId id, string nickName, byte[]? avatar , string email, string passwordHash, RoleId roleId, CityId? cityId)
         {
             Id = id;
             NickName = nickName;
+            Avatar = avatar;
             Email = email;
             PasswordHash = passwordHash;
             CreatedAt = DateTime.UtcNow;
@@ -32,12 +33,13 @@ namespace Domain.Users
             CityId = cityId;
         }
 
-        public static User New(string nickName, string email, string password, RoleId roleId, CityId? cityId)
-            => new(UserId.New(), nickName, email, BCrypt.Net.BCrypt.HashPassword(password), roleId, cityId);
+        public static User New(string nickName, byte[]? avatar, string email, string password, RoleId roleId, CityId? cityId)
+            => new(UserId.New(), nickName, avatar, email, BCrypt.Net.BCrypt.HashPassword(password), roleId, cityId);
 
-        public void Update(string nickName, string email, RoleId roleId, CityId? cityId)
+        public void Update(string nickName, byte[]? avatar, string email, RoleId roleId, CityId? cityId)
         {
             NickName = nickName;
+            Avatar = avatar;
             Email = email;
             RoleId = roleId;
             CityId = cityId;

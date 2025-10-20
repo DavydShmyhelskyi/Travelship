@@ -13,6 +13,7 @@ public record UpdateUserCommand : IRequest<Either<UserException, User>>
 {
     public required Guid Id { get; init; }
     public required string NickName { get; init; }
+    public byte[]? Avatar { get; init; }
     public required string Email { get; init; }
     public required Guid RoleId { get; init; }
     public Guid? CityId { get; init; }
@@ -67,6 +68,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository)
         {
             user.Update(
                 request.NickName,
+                request.Avatar,
                 request.Email,
                 new RoleId(request.RoleId),
                 request.CityId.HasValue ? new CityId(request.CityId.Value) : null);

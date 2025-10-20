@@ -1,6 +1,5 @@
 ﻿using Domain.Users;
 using LanguageExt;
-using LanguageExt.ClassInstances;
 
 namespace Application.Common.Interfaces.Repositories
 {
@@ -12,5 +11,7 @@ namespace Application.Common.Interfaces.Repositories
         Task<Option<User>> GetByNickNameAsync(string nickname, CancellationToken cancellationToken);
         Task<Option<User>> GetByEmailAsync(string email, CancellationToken cancellationToken);
         Task<Option<User>> GetByIdAsync(UserId id, CancellationToken cancellationToken);
+        Task<IReadOnlyList<User>> GetByIdsAsync(IReadOnlyList<UserId> userIds, CancellationToken cancellationToken);
+
     }
 }

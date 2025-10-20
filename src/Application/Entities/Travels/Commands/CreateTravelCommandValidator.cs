@@ -7,16 +7,27 @@ public class CreateTravelCommandValidator : AbstractValidator<CreateTravelComman
     public CreateTravelCommandValidator()
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title is required.")
-            .MaximumLength(200).WithMessage("Title must be less than 200 characters.");
+            .NotEmpty()
+            .MaximumLength(100);
+
         RuleFor(x => x.Description)
-            .MaximumLength(1000).WithMessage("Description must be less than 1000 characters.");
+            .NotEmpty()
+            .MaximumLength(1000);
 
         RuleFor(x => x.StartDate)
             .LessThanOrEqualTo(x => x.EndDate)
-            .WithMessage("Start date must be earlier than or equal to End date.");
+            .WithMessage("Start date must be before or equal to end date.");
 
-        RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("UserId is required.");
+        RuleFor(x => x.Places)
+            .NotEmpty()
+            .WithMessage("Travel must contain at least one place.");
+
+        RuleFor(x => x.Members)
+            .NotEmpty()
+            .WithMessage("Travel must have at least one member.");
+
+        RuleFor(x=> x.UserId)
+            .NotEmpty()
+            .WithMessage("UserId is required.");
     }
 }

@@ -9,7 +9,7 @@ namespace Domain.Places
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
 
-        public IEnumerable<PlacePhoto> PlacePhotos { get; private set; } = new List<PlacePhoto>();
+        public ICollection<PlacePhoto>? PlacePhotos { get; private set; } = new List<PlacePhoto>();
 
         private Place(PlaceId id, string title, double latitude, double longitude)
         {

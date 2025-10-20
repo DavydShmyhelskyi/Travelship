@@ -7,7 +7,7 @@ namespace Domain.Countries
         public CountryId Id { get; }
         public string Title { get; private set; }
 
-        public IEnumerable<City> Cities { get; private set; } = new List<City>();
+        public ICollection<City> Cities { get; private set; } = new List<City>();
 
         private Country(CountryId id, string title)
         {

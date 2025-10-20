@@ -11,6 +11,7 @@ namespace Application.Entities.Users.Commands;
 public record CreateUserCommand : IRequest<Either<UserException, User>>
 {
     public required string NickName { get; init; }
+    public byte[]? Avatar { get; init; }
     public required string Email { get; init; }
     public required string Password { get; init; }
     public required Guid RoleId { get; init; }
@@ -45,6 +46,7 @@ public class CreateUserCommandHandler(IUserRepository userRepository)
         {
             var user = User.New(
                 request.NickName,
+                request.Avatar,
                 request.Email,
                 request.Password,
                 new RoleId(request.RoleId),
