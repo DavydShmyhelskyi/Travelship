@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Application.Entities.Followers.Commands;
+using FluentValidation;
 
 namespace Application.Entities.Folowers.Commands;
 
@@ -6,12 +7,12 @@ public class CreateFollowerCommandValidator : AbstractValidator<CreateFollowerCo
 {
     public CreateFollowerCommandValidator()
     {
-        RuleFor(x => x.FollowerId)
+        RuleFor(x => x.FollowerUserId)
             .NotEmpty().WithMessage("FollowerId is required.");
 
-        RuleFor(x => x.FollowedId)
+        RuleFor(x => x.FollowedUserId)
             .NotEmpty().WithMessage("FollowedId is required.")
-            .NotEqual(x => x.FollowerId)
+            .NotEqual(x => x.FollowerUserId)
             .WithMessage("FollowerId and FollowedId cannot be the same.");
     }
 }

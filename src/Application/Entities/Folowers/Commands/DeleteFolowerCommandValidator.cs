@@ -1,22 +1,18 @@
-﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Entities.Followers.Commands;
+using FluentValidation;
 
 namespace Application.Entities.Folowers.Commands
 {
-    public class DeleteFollowerCommandValidator : AbstractValidator<DeleteFoll>
+    public class DeleteFollowerCommandValidator : AbstractValidator<DeleteFollowerCommand>
     {
-        public CreateFollowerCommandValidator()
+        public DeleteFollowerCommandValidator()
         {
-            RuleFor(x => x.FollowerId)
-                .NotEmpty().WithMessage("FollowerId is required.");
+            RuleFor(x => x.FollowerUserId)
+            .NotEmpty().WithMessage("FollowerId is required.");
 
-            RuleFor(x => x.FollowedId)
+            RuleFor(x => x.FollowedUserId)
                 .NotEmpty().WithMessage("FollowedId is required.")
-                .NotEqual(x => x.FollowerId)
+                .NotEqual(x => x.FollowerUserId)
                 .WithMessage("FollowerId and FollowedId cannot be the same.");
         }
     }
