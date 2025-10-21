@@ -1,26 +1,26 @@
-﻿using Domain.Folowers;
+﻿using Domain.Followers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations;
 
-public class FolowersConfiguration : IEntityTypeConfiguration<Folower>
+public class FollowersConfiguration : IEntityTypeConfiguration<Follower>
 {
-    public void Configure(EntityTypeBuilder<Folower> builder)
+    public void Configure(EntityTypeBuilder<Follower> builder)
     {
-        builder.HasKey(x => new { x.FollowerId, x.FollowedId });
+        builder.HasKey(x => new { x.FollowerUserId, x.FollowedUserId });
 
         builder.Property(x => x.Date)
             .IsRequired();
 
-        builder.HasOne(x => x.Follower)
-            .WithMany()
-            .HasForeignKey(x => x.FollowerId)
+        builder.HasOne(x => x.FollowerUser)
+            .WithMany() 
+            .HasForeignKey(x => x.FollowerUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.Followed)
+        builder.HasOne(x => x.FollowedUser)
             .WithMany()
-            .HasForeignKey(x => x.FollowedId)
+            .HasForeignKey(x => x.FollowedUserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

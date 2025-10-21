@@ -18,8 +18,9 @@ namespace Domain.Users
 
         public CityId? CityId { get; private set; }
         public City? City { get; private set; }
-        
-        public ICollection<UserTravel>? Travels { get; private set; } = new List<UserTravel>();
+
+        public ICollection<Travel> Travels { get; private set; } = new List<Travel>();
+        public ICollection<UserTravel> UserTravels { get; private set; } = new List<UserTravel>();
 
         private User(UserId id, string nickName, byte[]? avatar , string email, string passwordHash, RoleId roleId, CityId? cityId)
         {

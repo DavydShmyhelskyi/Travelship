@@ -15,13 +15,16 @@ public class PlacesConfiguration : IEntityTypeConfiguration<Place>
             .IsRequired();
 
         builder.Property(x => x.Latitude)
+            .HasPrecision(9, 6)
             .IsRequired();
 
         builder.Property(x => x.Longitude)
+            .HasPrecision(9, 6)
             .IsRequired();
 
         builder.HasMany(x => x.PlacePhotos)
             .WithOne(x => x.Place)
-            .HasForeignKey(x => x.PlaceId);
+            .HasForeignKey(x => x.PlaceId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

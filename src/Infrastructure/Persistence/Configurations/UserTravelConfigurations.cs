@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Configurations
             builder.Property(ut => ut.UserId)
                 .HasConversion(x => x.Value, x => new Domain.Users.UserId(x));
             builder.HasOne<Domain.Users.User>()
-                .WithMany(u => u.Travels)
+                .WithMany(u => u.UserTravels)
                 .HasForeignKey(ut => ut.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 

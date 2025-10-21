@@ -11,6 +11,7 @@ public class FeedbacksConfiguration : IEntityTypeConfiguration<Feedback>
     {
         builder.HasKey(x => x.Id);
 
+        // Основні властивості 
         builder.Property(x => x.Comment)
             .HasColumnType("varchar(500)")
             .IsRequired();
@@ -27,13 +28,14 @@ public class FeedbacksConfiguration : IEntityTypeConfiguration<Feedback>
             .HasConversion(new DateTimeUtcConverter())
             .IsRequired(false);
 
+        // Зв’язки
         builder.HasOne(x => x.User)
-            .WithMany()
+            .WithMany() 
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Place)
-            .WithMany()
+            .WithMany() 
             .HasForeignKey(x => x.PlaceId)
             .OnDelete(DeleteBehavior.Cascade);
     }

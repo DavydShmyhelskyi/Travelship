@@ -19,7 +19,8 @@ public class PlacePhotosConfiguration : IEntityTypeConfiguration<PlacePhoto>
             .IsRequired();
 
         builder.Property(x => x.IsShown)
-            .HasDefaultValue(true);
+            .HasDefaultValue(true)
+            .IsRequired();
 
         builder.HasOne(x => x.Place)
             .WithMany(x => x.PlacePhotos)

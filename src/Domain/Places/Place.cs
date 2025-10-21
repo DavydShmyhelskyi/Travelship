@@ -10,6 +10,8 @@ namespace Domain.Places
         public double Longitude { get; private set; }
 
         public ICollection<PlacePhoto>? PlacePhotos { get; private set; } = new List<PlacePhoto>();
+        public ICollection<TravelPlace> Travels { get; private set; } = new List<TravelPlace>();
+
 
         private Place(PlaceId id, string title, double latitude, double longitude)
         {
