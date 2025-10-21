@@ -46,9 +46,9 @@ public static class ConfigurePersistenceServices
         services.AddScoped<IFeedbackQueries>(provider => provider.GetRequiredService<FeedbackRepository>());
 
         // Followers 
-        services.AddScoped<FolowerRepository>();
-        services.AddScoped<IFolowerRepository>(provider => provider.GetRequiredService<FolowerRepository>());
-        services.AddScoped<IFolowerQueries>(provider => provider.GetRequiredService<FolowerRepository>());
+        services.AddScoped<FollowerRepository>();
+        services.AddScoped<IFollowerRepository>(provider => provider.GetRequiredService<FollowerRepository>());
+        services.AddScoped<IFollowerQueries>(provider => provider.GetRequiredService<FollowerRepository>());
 
         // Places
         services.AddScoped<PlaceRepository>();

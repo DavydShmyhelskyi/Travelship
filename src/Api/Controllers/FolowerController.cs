@@ -1,16 +1,17 @@
 ﻿using Api.Dtos;
 using Application.Common.Interfaces.Queries;
-using Application.Entities.Folowers.Commands;
+using Application.Entities.Followers.Commands;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace Api.Controllers;
 
 [Route("followers")]
 [ApiController]
 public class FollowersController(
-    IFolowerQueries followerQueries,
+    IFollowerQueries followerQueries,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -28,8 +29,8 @@ public class FollowersController(
 
         var input = new CreateFollowerCommand
         {
-            FollowerId = request.FollowerId,
-            FollowedId = request.FollowedId
+            FollowerUserId = request.FollowerId,
+            FollowedUserId = request.FollowedId
         };
 
         var newFollower = await sender.Send(input, cancellationToken);

@@ -17,21 +17,27 @@ public class DeleteFollowerCommandHandler(IFollowerRepository followerRepository
     : IRequestHandler<DeleteFollowerCommand, Either<FollowerException, Follower>>
 {
     public async Task<Either<FollowerException, Follower>> Handle(
-        DeleteFollowerCommand request,
-        CancellationToken cancellationToken)
+    DeleteFollowerCommand request,
+    CancellationToken cancellationToken)
     {
         var followerId = new UserId(request.FollowerUserId);
         var followedId = new UserId(request.FollowedUserId);
 
         var existing = await followerRepository.GetByIdsAsync(followerId, followedId, cancellationToken);
 
-        if (existing is null)
+        if (existing.IsNone)
         {
             return new FollowerNotFoundException(followerId, followedId);
         }
 
-        return await DeleteEntity(existing, cancellationToken);
+        var follower = existing.Match(
+            Some: f => f,
+            None: () => throw new InvalidOperationException("Unexpected empty follower")
+        );
+
+        return await DeleteEntity(follower, cancellationToken);
     }
+
 
     private async Task<Either<FollowerException, Follower>> DeleteEntity(
         Follower follower,

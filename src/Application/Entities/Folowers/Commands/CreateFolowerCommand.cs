@@ -30,7 +30,7 @@ public class CreateFollowerCommandHandler(IFollowerRepository followerRepository
 
         var existing = await followerRepository.GetByIdsAsync(followerId, followedId, cancellationToken);
 
-        if (existing is not null)
+        if (existing.IsSome)
         {
             return new FollowerAlreadyExistException(followerId, followedId);
         }

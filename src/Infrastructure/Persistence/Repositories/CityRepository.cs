@@ -8,34 +8,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
-public class CityRepository : ICityRepository, ICityQueries
+public class CityRepository(ApplicationDbContext context) : ICityRepository, ICityQueries
 {
-    private readonly ApplicationDbContext _context;
-
-    public CityRepository(ApplicationDbContext context, ApplicationSettings settings)
-    {
-        var connectionString = settings.ConnectionStrings.DefaultConnection;
-        _context = context;
-    }
-
     public async Task<City> AddAsync(City entity, CancellationToken cancellationToken)
     {
-        await _context.Cities.AddAsync(entity, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.Cities.AddAsync(entity, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     public async Task<City> UpdateAsync(City entity, CancellationToken cancellationToken)
     {
-        _context.Cities.Update(entity);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Cities.Update(entity);
+        await context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     public async Task<City> DeleteAsync(City entity, CancellationToken cancellationToken)
     {
-        _context.Cities.Remove(entity);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Cities.Remove(entity);
+        await context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
@@ -44,7 +36,7 @@ public class CityRepository : ICityRepository, ICityQueries
         CountryId countryId,
         CancellationToken cancellationToken)
     {
-        var city = await _context.Cities
+        var city = await context.Cities
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 c => c.Title == title && c.CountryId == countryId,
@@ -55,7 +47,7 @@ public class CityRepository : ICityRepository, ICityQueries
 
     public async Task<Option<City>> GetByIdAsync(CityId id, CancellationToken cancellationToken)
     {
-        var city = await _context.Cities
+        var city = await context.Cities
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
@@ -64,7 +56,7 @@ public class CityRepository : ICityRepository, ICityQueries
 
     public async Task<IReadOnlyList<City>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _context.Cities
+        return await context.Cities
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
