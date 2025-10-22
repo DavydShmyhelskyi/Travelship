@@ -2,10 +2,10 @@
 
 namespace Api.Dtos;
 
-public record UserDto(Guid Id, string NickName, string Email, DateTime CreatedAt, Guid RoleId, Guid? CityId)
+public record UserDto(Guid Id, string NickName, byte[]? Avatar, string Email, DateTime CreatedAt, Guid RoleId, Guid? CityId)
 {
     public static UserDto FromDomainModel(User user)
-        => new(user.Id.Value, user.NickName, user.Email, user.CreatedAt, user.RoleId.Value, user.CityId.Value);
+        => new(user.Id.Value, user.NickName, user.Avatar, user.Email, user.CreatedAt, user.RoleId.Value, user.CityId?.Value);
 }
 
-public record CreateUserDto(string NickName, string Email, string Password, Guid RoleId, Guid? CityId);
+public record CreateUserDto(string NickName, byte[]? Avatar, string Email, string Password, Guid RoleId, Guid? CityId);

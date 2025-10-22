@@ -29,8 +29,8 @@ public class FollowersController(
 
         var input = new CreateFollowerCommand
         {
-            FollowerUserId = request.FollowerId,
-            FollowedUserId = request.FollowedId
+            FollowerUserId = request.FollowerUserId,
+            FollowedUserId = request.FollowedUserId
         };
 
         var newFollower = await sender.Send(input, cancellationToken);
