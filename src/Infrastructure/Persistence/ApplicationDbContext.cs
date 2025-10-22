@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Domain.Cities;
 using Domain.Countries;
 using Domain.Feedbacks;
@@ -8,11 +9,14 @@ using Domain.Roles;
 using Domain.Travels;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 using System.Reflection;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+    : DbContext(options), IApplicationDbContext
 {
     public DbSet<City> Cities { get; set; } = null!;
     public DbSet<Country> Countries { get; set; } = null!;
@@ -29,5 +33,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
+    }
+
+    /// <summary>
+    /// Added for education purposes
+    /// </summary>
+    public async Task<IDbTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
+    {
+        var transaction = await Database.BeginTransactionAsync(cancellationToken);
+
+        return transaction.GetDbTransaction();
     }
 }
