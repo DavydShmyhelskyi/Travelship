@@ -74,5 +74,15 @@ public static class ConfigurePersistenceServices
         services.AddScoped<UserRepository>();
         services.AddScoped<IUserRepository>(provider => provider.GetRequiredService<UserRepository>());
         services.AddScoped<IUserQueries>(provider => provider.GetRequiredService<UserRepository>());
+
+        // UserTravels
+        services.AddScoped<UserTravelRepository>();
+        services.AddScoped<IUserTravelRepository>(provider => provider.GetRequiredService<UserTravelRepository>());
+        services.AddScoped<IUserTravelQueries>(provider => provider.GetRequiredService<UserTravelRepository>());
+
+        // TravelPlaces
+        services.AddScoped<TravelPlaceRepository>();
+        services.AddScoped<ITravelPlaceRepository>(provider => provider.GetRequiredService<TravelPlaceRepository>());
+        services.AddScoped<ITravelPlaceQueries>(provider => provider.GetRequiredService<TravelPlaceRepository>());
     }
 }
