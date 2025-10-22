@@ -9,7 +9,7 @@ public class CreateCityDtoValidator : AbstractValidator<CreateCityDto>
     {
         RuleFor(x => x.Title)
             .NotEmpty()
-            .MinimumLength(2);
+            .MinimumLength(3);
 
         RuleFor(x => x.CountryId)
             .NotEmpty();

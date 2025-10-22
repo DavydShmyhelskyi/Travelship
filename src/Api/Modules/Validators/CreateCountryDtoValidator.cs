@@ -9,6 +9,6 @@ public class CreateCountryDtoValidator : AbstractValidator<CreateCountryDto>
     {
         RuleFor(x => x.Title)
             .NotEmpty()
-            .MinimumLength(2);
+            .MinimumLength(3);
     }
 }

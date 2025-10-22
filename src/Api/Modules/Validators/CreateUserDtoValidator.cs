@@ -9,15 +9,18 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
     {
         RuleFor(x => x.NickName)
             .NotEmpty()
-            .MinimumLength(3);
+            .MinimumLength(3)
+            .MaximumLength(100);
 
         RuleFor(x => x.Email)
             .NotEmpty()
-            .EmailAddress();
+            .EmailAddress()
+            .MaximumLength(255);
 
         RuleFor(x => x.Password)
             .NotEmpty()
-            .MinimumLength(6);
+            .MinimumLength(6)
+            .MaximumLength(255);
 
         RuleFor(x => x.RoleId)
             .NotEmpty();

@@ -9,7 +9,8 @@ public class CreateFeedbackDtoValidator : AbstractValidator<CreateFeedbackDto>
     {
         RuleFor(x => x.Comment)
             .NotEmpty()
-            .MinimumLength(3);
+            .MinimumLength(3)
+            .MaximumLength(500);
 
         RuleFor(x => x.Rating)
             .InclusiveBetween(1, 5);

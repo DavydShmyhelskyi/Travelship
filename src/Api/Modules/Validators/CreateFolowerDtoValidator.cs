@@ -7,11 +7,12 @@ public class CreateFollowerDtoValidator : AbstractValidator<CreateFollowerDto>
 {
     public CreateFollowerDtoValidator()
     {
-        RuleFor(x => x.FollowerId)
+        RuleFor(x => x.FollowerUserId)
             .NotEmpty();
 
-        RuleFor(x => x.FollowedId)
+        RuleFor(x => x.FollowedUserId)
             .NotEmpty()
-            .NotEqual(x => x.FollowerId).WithMessage("Follower and Followed cannot be the same user");
+            .NotEqual(x => x.FollowerUserId)
+            .WithMessage("User cannot follow themselves.");
     }
 }

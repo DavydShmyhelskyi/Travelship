@@ -8,12 +8,12 @@ public class CreatePlacePhotoDtoValidator : AbstractValidator<CreatePlacePhotoDt
     public CreatePlacePhotoDtoValidator()
     {
         RuleFor(x => x.Photo)
-            .NotNull()
-            .Must(p => p.Length > 0).WithMessage("Photo cannot be empty");
+            .NotEmpty();
 
         RuleFor(x => x.Description)
             .NotEmpty()
-            .MinimumLength(3);
+            .MinimumLength(3)
+            .MaximumLength(255);
 
         RuleFor(x => x.PlaceId)
             .NotEmpty();
