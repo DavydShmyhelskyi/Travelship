@@ -18,7 +18,7 @@ namespace Domain.Travels
         public ICollection<UserTravel>? Members { get; private set; } = new List<UserTravel>();
         public ICollection<TravelPlace> Places { get; private set; } = new List<TravelPlace>();
 
-        private Travel(TravelId id, string title, DateTime startDate, DateTime endDate, string description, byte[]? image, UserId userId, ICollection<UserTravel> members, ICollection<TravelPlace> places)
+        private Travel(TravelId id, string title, DateTime startDate, DateTime endDate, string description, byte[]? image, UserId userId)
         {
             if (startDate > endDate)
                 throw new ArgumentException("Start date cannot be later than end date.");
@@ -30,13 +30,15 @@ namespace Domain.Travels
             Description = description;
             Image = image;
             IsDone = false;
-            UserId = userId; 
-            Members = members;
-            Places = places;
+            UserId = userId;
         }
 
         public static Travel New(TravelId id, string title, DateTime startDate, DateTime endDate, string description, byte[]? image, UserId userId, ICollection<UserTravel> members,  ICollection<TravelPlace> places)
-            => new(id, title, startDate, endDate, description, image, userId, members, places);
+            => new(id, title, startDate, endDate, description, image, userId)
+            {
+                Members = members,
+                Places = places
+            };
 
         public void Update(string title, DateTime startDate, DateTime endDate, string description, byte[]? image, bool isDone, ICollection<UserTravel> members, ICollection<TravelPlace> places)
         {

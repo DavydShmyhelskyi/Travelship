@@ -9,6 +9,8 @@ public class PlacesConfiguration : IEntityTypeConfiguration<Place>
     public void Configure(EntityTypeBuilder<Place> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .HasConversion(x => x.Value, x => new PlaceId(x));
 
         builder.Property(x => x.Title)
             .HasColumnType("varchar(255)")

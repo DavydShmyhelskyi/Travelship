@@ -10,6 +10,8 @@ public class FeedbacksConfiguration : IEntityTypeConfiguration<Feedback>
     public void Configure(EntityTypeBuilder<Feedback> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .HasConversion(x => x.Value, x => new FeedbackId(x));
 
         // Основні властивості 
         builder.Property(x => x.Comment)

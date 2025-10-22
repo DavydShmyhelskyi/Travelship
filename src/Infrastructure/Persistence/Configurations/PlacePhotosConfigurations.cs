@@ -9,6 +9,8 @@ public class PlacePhotosConfiguration : IEntityTypeConfiguration<PlacePhoto>
     public void Configure(EntityTypeBuilder<PlacePhoto> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .HasConversion(x => x.Value, x => new PlacePhotoId(x));
 
         builder.Property(x => x.Photo)
             .HasColumnType("bytea")

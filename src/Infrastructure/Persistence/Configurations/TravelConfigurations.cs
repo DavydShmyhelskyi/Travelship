@@ -10,6 +10,8 @@ namespace Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Travel> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(builder => builder.Id)
+                .HasConversion(x => x.Value, x => new TravelId(x));
 
             builder.Property(x => x.Title)
                 .HasColumnType("varchar(255)")

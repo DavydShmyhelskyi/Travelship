@@ -9,6 +9,8 @@ public class RolesConfiguration : IEntityTypeConfiguration<Role>
     public void Configure(EntityTypeBuilder<Role> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .HasConversion(x => x.Value, x => new RoleId(x));
 
         builder.Property(x => x.Title)
             .HasColumnType("varchar(100)")
