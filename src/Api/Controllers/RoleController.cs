@@ -1,7 +1,7 @@
 ﻿using Api.Dtos;
+using Api.Modules.Errors;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Roles.Commands;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,13 +25,38 @@ public class RolesController(
         [FromBody] CreateRoleDto request,
         CancellationToken cancellationToken)
     {
+        var command = new CreateRoleCommand { Title = request.Title };
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<RoleDto>>(
+            r => RoleDto.FromDomainModel(r),
+            e => e.ToObjectResult());
+    }
 
-        var input = new CreateRoleCommand
+    [HttpPut]
+    public async Task<ActionResult<RoleDto>> UpdateRole(
+        [FromBody] UpdateRoleDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateRoleCommand
         {
+            RoleId = request.Id,
             Title = request.Title
         };
 
-        var newRole = await sender.Send(input, cancellationToken);
-        return RoleDto.FromDomainModel(newRole);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<RoleDto>>(
+            r => RoleDto.FromDomainModel(r),
+            e => e.ToObjectResult());
+    }
+
+    [HttpDelete("{roleId:guid}")]
+    public async Task<ActionResult<RoleDto>> DeleteRole(Guid roleId, CancellationToken cancellationToken)
+    {
+        var command = new DeleteRoleCommand { RoleId = roleId };
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<RoleDto>>(
+            r => RoleDto.FromDomainModel(r),
+            e => e.ToObjectResult());
     }
 }

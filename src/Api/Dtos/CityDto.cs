@@ -9,3 +9,5 @@ public record CityDto(Guid Id, string Title, Guid CountryId)
 }
 
 public record CreateCityDto(string Title, Guid CountryId);
+
+public record UpdateCityDto(Guid Id, string Title, Guid CountryId);

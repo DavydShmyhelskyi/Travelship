@@ -9,3 +9,4 @@ public record UserDto(Guid Id, string NickName, byte[]? Avatar, string Email, Da
 }
 
 public record CreateUserDto(string NickName, byte[]? Avatar, string Email, string Password, Guid RoleId, Guid? CityId);
+public record UpdateUserDto(Guid Id, string NickName, byte[]? Avatar, string Email, Guid RoleId, Guid? CityId);

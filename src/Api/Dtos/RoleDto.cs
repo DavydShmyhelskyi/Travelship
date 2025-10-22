@@ -9,3 +9,4 @@ public record RoleDto(Guid Id, string Title)
 }
 
 public record CreateRoleDto(string Title);
+public record UpdateRoleDto(Guid Id, string Title);

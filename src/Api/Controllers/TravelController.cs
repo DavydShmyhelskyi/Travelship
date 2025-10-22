@@ -1,7 +1,7 @@
 ﻿using Api.Dtos;
+using Api.Modules.Errors;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Travels.Commands;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,19 +25,59 @@ public class TravelsController(
         [FromBody] CreateTravelDto request,
         CancellationToken cancellationToken)
     {
-
-        var input = new CreateTravelCommand
+        var command = new CreateTravelCommand
         {
             Title = request.Title,
             StartDate = request.StartDate,
             EndDate = request.EndDate,
             Description = request.Description,
             Image = request.Image,
-            IsDone = request.IsDone,
+            IsDone = false, // створена подорож ще не завершена
+            Places = request.Places,
+            Members = request.Members,
             UserId = request.UserId
         };
 
-        var newTravel = await sender.Send(input, cancellationToken);
-        return TravelDto.FromDomainModel(newTravel);
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<TravelDto>>(
+            t => TravelDto.FromDomainModel(t),
+            e => e.ToObjectResult());
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<TravelDto>> UpdateTravel(
+        [FromBody] UpdateTravelDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateTravelCommand
+        {
+            TravelId = request.Id,
+            Title = request.Title,
+            StartDate = request.StartDate,
+            EndDate = request.EndDate,
+            Description = request.Description,
+            Image = request.Image,
+            IsDone = request.IsDone,
+            Places = request.Places,
+            Members = request.Members
+        };
+
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<TravelDto>>(
+            t => TravelDto.FromDomainModel(t),
+            e => e.ToObjectResult());
+    }
+
+    [HttpDelete("{travelId:guid}")]
+    public async Task<ActionResult<TravelDto>> DeleteTravel(Guid travelId, CancellationToken cancellationToken)
+    {
+        var command = new DeleteTravelCommand { TravelId = travelId };
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<TravelDto>>(
+            t => TravelDto.FromDomainModel(t),
+            e => e.ToObjectResult());
     }
 }

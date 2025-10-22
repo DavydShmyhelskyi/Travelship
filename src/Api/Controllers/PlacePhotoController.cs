@@ -1,13 +1,13 @@
 ﻿using Api.Dtos;
+using Api.Modules.Errors;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.PlacePhotos.Commands;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("placephotos")]
+[Route("place-photos")]
 [ApiController]
 public class PlacePhotosController(
     IPlacePhotoQueries placePhotoQueries,
@@ -25,15 +25,46 @@ public class PlacePhotosController(
         [FromBody] CreatePlacePhotoDto request,
         CancellationToken cancellationToken)
     {
-
-        var input = new CreatePlacePhotoCommand
+        var command = new CreatePlacePhotoCommand
         {
             Photo = request.Photo,
             Description = request.Description,
             PlaceId = request.PlaceId
         };
 
-        var newPhoto = await sender.Send(input, cancellationToken);
-        return PlacePhotoDto.FromDomainModel(newPhoto);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<PlacePhotoDto>>(
+            p => PlacePhotoDto.FromDomainModel(p),
+            e => e.ToObjectResult());
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<PlacePhotoDto>> UpdatePlacePhoto(
+        [FromBody] UpdatePlacePhotoDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdatePlacePhotoCommand
+        {
+            PlacePhotoId = request.Id,
+            Photo = request.Photo,
+            Description = request.Description,
+            IsShown = request.IsShown
+        };
+
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<PlacePhotoDto>>(
+            p => PlacePhotoDto.FromDomainModel(p),
+            e => e.ToObjectResult());
+    }
+
+    [HttpDelete("{photoId:guid}")]
+    public async Task<ActionResult<PlacePhotoDto>> DeletePlacePhoto(Guid photoId, CancellationToken cancellationToken)
+    {
+        var command = new DeletePlacePhotoCommand { PlacePhotoId = photoId };
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<PlacePhotoDto>>(
+            p => PlacePhotoDto.FromDomainModel(p),
+            e => e.ToObjectResult());
     }
 }

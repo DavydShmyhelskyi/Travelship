@@ -9,3 +9,5 @@ public record FeedbackDto(Guid Id, string Comment, int Rating, DateTime Date, Da
 }
 
 public record CreateFeedbackDto(string Comment, int Rating, Guid UserId, Guid PlaceId);
+
+public record UpdateFeedbackDto(Guid Id, string Comment, int Rating);

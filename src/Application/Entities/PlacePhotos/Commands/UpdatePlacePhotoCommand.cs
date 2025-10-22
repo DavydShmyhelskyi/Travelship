@@ -11,6 +11,7 @@ public record UpdatePlacePhotoCommand : IRequest<Either<PlacePhotoException, Pla
     public required Guid PlacePhotoId { get; init; }
     public required byte[] Photo { get; init; }
     public required string Description { get; init; }
+    public required bool IsShown { get; init; }
 }
 
 public class UpdatePlacePhotoCommandHandler(IPlacePhotoRepository placePhotoRepository)

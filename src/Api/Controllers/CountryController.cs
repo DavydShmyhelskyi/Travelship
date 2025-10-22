@@ -1,7 +1,7 @@
 ﻿using Api.Dtos;
+using Api.Modules.Errors;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Countries.Commands;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,13 +25,38 @@ public class CountriesController(
         [FromBody] CreateCountryDto request,
         CancellationToken cancellationToken)
     {
+        var command = new CreateCountryCommand { Title = request.Title };
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<CountryDto>>(
+            c => CountryDto.FromDomainModel(c),
+            e => e.ToObjectResult());
+    }
 
-        var input = new CreateCountryCommand
+    [HttpPut]
+    public async Task<ActionResult<CountryDto>> UpdateCountry(
+        [FromBody] UpdateCountryDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateCountryCommand
         {
+            CountryId = request.Id,
             Title = request.Title
         };
 
-        var newCountry = await sender.Send(input, cancellationToken);
-        return CountryDto.FromDomainModel(newCountry);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<CountryDto>>(
+            c => CountryDto.FromDomainModel(c),
+            e => e.ToObjectResult());
+    }
+
+    [HttpDelete("{countryId:guid}")]
+    public async Task<ActionResult<CountryDto>> DeleteCountry(Guid countryId, CancellationToken cancellationToken)
+    {
+        var command = new DeleteCountryCommand { CountryId = countryId };
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<CountryDto>>(
+            c => CountryDto.FromDomainModel(c),
+            e => e.ToObjectResult());
     }
 }

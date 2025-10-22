@@ -1,7 +1,7 @@
 ﻿using Api.Dtos;
+using Api.Modules.Errors;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Places.Commands;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,15 +25,46 @@ public class PlacesController(
         [FromBody] CreatePlaceDto request,
         CancellationToken cancellationToken)
     {
-
-        var input = new CreatePlaceCommand
+        var command = new CreatePlaceCommand
         {
             Title = request.Title,
             Latitude = request.Latitude,
             Longitude = request.Longitude
         };
 
-        var newPlace = await sender.Send(input, cancellationToken);
-        return PlaceDto.FromDomainModel(newPlace);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<PlaceDto>>(
+            p => PlaceDto.FromDomainModel(p),
+            e => e.ToObjectResult());
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<PlaceDto>> UpdatePlace(
+        [FromBody] UpdatePlaceDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdatePlaceCommand
+        {
+            PlaceId = request.Id,
+            Title = request.Title,
+            Latitude = request.Latitude,
+            Longitude = request.Longitude
+        };
+
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<PlaceDto>>(
+            p => PlaceDto.FromDomainModel(p),
+            e => e.ToObjectResult());
+    }
+
+    [HttpDelete("{placeId:guid}")]
+    public async Task<ActionResult<PlaceDto>> DeletePlace(Guid placeId, CancellationToken cancellationToken)
+    {
+        var command = new DeletePlaceCommand { PlaceId = placeId };
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<PlaceDto>>(
+            p => PlaceDto.FromDomainModel(p),
+            e => e.ToObjectResult());
     }
 }

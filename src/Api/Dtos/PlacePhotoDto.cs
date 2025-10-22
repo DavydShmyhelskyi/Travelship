@@ -9,3 +9,5 @@ public record PlacePhotoDto(Guid Id, byte[] Photo, string Description, bool IsSh
 }
 
 public record CreatePlacePhotoDto(byte[] Photo, string Description, Guid PlaceId);
+
+public record UpdatePlacePhotoDto(Guid Id, byte[] Photo, string Description, bool IsShown);

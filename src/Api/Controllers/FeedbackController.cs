@@ -1,7 +1,7 @@
 ﻿using Api.Dtos;
+using Api.Modules.Errors;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Feedbacks.Commands;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,8 +25,7 @@ public class FeedbacksController(
         [FromBody] CreateFeedbackDto request,
         CancellationToken cancellationToken)
     {
-
-        var input = new CreateFeedbackCommand
+        var command = new CreateFeedbackCommand
         {
             Comment = request.Comment,
             Rating = request.Rating,
@@ -34,7 +33,38 @@ public class FeedbacksController(
             PlaceId = request.PlaceId
         };
 
-        var newFeedback = await sender.Send(input, cancellationToken);
-        return FeedbackDto.FromDomainModel(newFeedback);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<FeedbackDto>>(
+            f => FeedbackDto.FromDomainModel(f),
+            e => e.ToObjectResult());
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<FeedbackDto>> UpdateFeedback(
+        [FromBody] UpdateFeedbackDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateFeedbackCommand
+        {
+            FeedbackId = request.Id,
+            Comment = request.Comment,
+            Rating = request.Rating
+        };
+
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<FeedbackDto>>(
+            f => FeedbackDto.FromDomainModel(f),
+            e => e.ToObjectResult());
+    }
+
+    [HttpDelete("{feedbackId:guid}")]
+    public async Task<ActionResult<FeedbackDto>> DeleteFeedback(Guid feedbackId, CancellationToken cancellationToken)
+    {
+        var command = new DeleteFeedbackCommand { FeedbackId = feedbackId };
+        var result = await sender.Send(command, cancellationToken);
+
+        return result.Match<ActionResult<FeedbackDto>>(
+            f => FeedbackDto.FromDomainModel(f),
+            e => e.ToObjectResult());
     }
 }

@@ -9,3 +9,5 @@ public record CountryDto(Guid Id, string Title)
 }
 
 public record CreateCountryDto(string Title);
+
+public record UpdateCountryDto(Guid Id, string Title);

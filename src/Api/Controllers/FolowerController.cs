@@ -1,10 +1,9 @@
 ﻿using Api.Dtos;
+using Api.Modules.Errors;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Followers.Commands;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace Api.Controllers;
 
@@ -26,14 +25,32 @@ public class FollowersController(
         [FromBody] CreateFollowerDto request,
         CancellationToken cancellationToken)
     {
-
-        var input = new CreateFollowerCommand
+        var command = new CreateFollowerCommand
         {
             FollowerUserId = request.FollowerUserId,
             FollowedUserId = request.FollowedUserId
         };
 
-        var newFollower = await sender.Send(input, cancellationToken);
-        return FollowerDto.FromDomainModel(newFollower);
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<FollowerDto>>(
+            f => FollowerDto.FromDomainModel(f),
+            e => e.ToObjectResult());
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<FollowerDto>> DeleteFollower(
+        [FromBody] CreateFollowerDto request,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteFollowerCommand
+        {
+            FollowerUserId = request.FollowerUserId,
+            FollowedUserId = request.FollowedUserId
+        };
+
+        var result = await sender.Send(command, cancellationToken);
+        return result.Match<ActionResult<FollowerDto>>(
+            f => FollowerDto.FromDomainModel(f),
+            e => e.ToObjectResult());
     }
 }
