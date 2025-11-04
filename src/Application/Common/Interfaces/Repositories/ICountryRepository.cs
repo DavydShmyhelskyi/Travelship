@@ -8,7 +8,5 @@ namespace Application.Common.Interfaces.Repositories
         Task<Country> AddAsync(Country entity, CancellationToken cancellationToken);
         Task<Country> UpdateAsync(Country entity, CancellationToken cancellationToken);
         Task<Country> DeleteAsync(Country entity, CancellationToken cancellationToken);
-        Task<Option<Country>> GetByTitleAsync(string title, CancellationToken cancellationToken);
-        Task<Option<Country>> GetByIdAsync(CountryId id, CancellationToken cancellationToken);
     }
 }

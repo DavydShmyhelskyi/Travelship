@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Countries.Commands;
 using MediatR;
@@ -11,13 +12,27 @@ namespace Api.Controllers;
 [ApiController]
 public class CountriesController(
     ICountryQueries countryQueries,
+    ICountriesControllerService controllerService,
     ISender sender) : ControllerBase
 {
+
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<CountryDto>>> GetCountries(CancellationToken cancellationToken)
     {
         var countries = await countryQueries.GetAllAsync(cancellationToken);
         return countries.Select(CountryDto.FromDomainModel).ToList();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<CountryDto>> Get(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<CountryDto>>(
+            c => c,
+            () => NotFound());
     }
 
     [HttpPost]

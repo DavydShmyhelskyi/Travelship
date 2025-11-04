@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Repositories;
+﻿using Application.Common.Interfaces.Queries;
+using Application.Common.Interfaces.Repositories;
 using Application.Entities.Countries.Exceptions;
 using Domain.Countries;
 using LanguageExt;
@@ -11,14 +12,14 @@ public record CreateCountryCommand : IRequest<Either<CountryException, Country>>
     public required string Title { get; init; }
 }
 
-public class CreateCountryCommandHandler(ICountryRepository countryRepository)
+public class CreateCountryCommandHandler(ICountryRepository countryRepository, ICountryQueries countryQueries)
     : IRequestHandler<CreateCountryCommand, Either<CountryException, Country>>
 {
     public async Task<Either<CountryException, Country>> Handle(
         CreateCountryCommand request,
         CancellationToken cancellationToken)
     {
-        var existingCountry = await countryRepository.GetByTitleAsync(request.Title, cancellationToken);
+        var existingCountry = await countryQueries.GetByTitleAsync(request.Title, cancellationToken);
 
         return await existingCountry.MatchAsync(
             c => new CountryAlreadyExistException(c.Id),

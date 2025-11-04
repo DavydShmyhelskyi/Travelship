@@ -38,9 +38,11 @@ public class CountryRepository(ApplicationDbContext context) : ICountryRepositor
     {
         var country = await context.Countries
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Title == title, cancellationToken);
+            .FirstOrDefaultAsync(c => EF.Functions.ILike(c.Title, title), cancellationToken);
+
         return country ?? Option<Country>.None;
     }
+
     public async Task<Option<Country>> GetByIdAsync(CountryId id, CancellationToken cancellationToken)
     {
         var country = await context.Countries

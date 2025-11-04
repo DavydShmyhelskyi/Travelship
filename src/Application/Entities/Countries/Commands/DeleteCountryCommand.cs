@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Repositories;
+﻿using Application.Common.Interfaces.Queries;
+using Application.Common.Interfaces.Repositories;
 using Application.Entities.Countries.Exceptions;
 using Domain.Countries;
 using LanguageExt;
@@ -11,14 +12,14 @@ namespace Application.Entities.Countries.Commands
     {
         public required Guid CountryId { get; init; }
     }
-    public class DeleteCountryCommandHandler (ICountryRepository countryRepository) : IRequestHandler<DeleteCountryCommand, Either<CountryException, Country>>
+    public class DeleteCountryCommandHandler (ICountryRepository countryRepository, ICountryQueries countryQueries) : IRequestHandler<DeleteCountryCommand, Either<CountryException, Country>>
     {
         public async Task<Either<CountryException, Country>> Handle(
         DeleteCountryCommand request,
         CancellationToken cancellationToken)
         {
             var countryId = new CountryId(request.CountryId);
-            var country = await countryRepository.GetByIdAsync(countryId, cancellationToken);
+            var country = await countryQueries.GetByIdAsync(countryId, cancellationToken);
             return await country.MatchAsync(
                 p => DeleteEntity(p, cancellationToken),
                 () => new CountryNotFoundException(countryId));

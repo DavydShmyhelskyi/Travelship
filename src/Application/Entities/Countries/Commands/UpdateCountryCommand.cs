@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Repositories;
+﻿using Application.Common.Interfaces.Queries;
+using Application.Common.Interfaces.Repositories;
 using Application.Entities.Countries.Exceptions;
 using Domain.Countries;
 using LanguageExt;
@@ -14,7 +15,8 @@ public record UpdateCountryCommand : IRequest<Either<CountryException, Country>>
 }
 
 public class UpdateCountryCommandHandler(
-    ICountryRepository countryRepository
+    ICountryRepository countryRepository,
+    ICountryQueries countryQueries
 ) : IRequestHandler<UpdateCountryCommand, Either<CountryException, Country>>
 {
     public async Task<Either<CountryException, Country>> Handle(
@@ -23,7 +25,7 @@ public class UpdateCountryCommandHandler(
     {
         var countryId = new CountryId(request.CountryId);
 
-        var country = await countryRepository.GetByIdAsync(countryId, cancellationToken);
+        var country = await countryQueries.GetByIdAsync(countryId, cancellationToken);
 
         return await country.MatchAsync(
             c => CheckDuplicates(c.Id, request.Title, cancellationToken)
@@ -52,7 +54,7 @@ public class UpdateCountryCommandHandler(
         string title,
         CancellationToken cancellationToken)
     {
-        var existing = await countryRepository.GetByTitleAsync(title, cancellationToken);
+        var existing = await countryQueries.GetByTitleAsync(title, cancellationToken);
 
         return existing.Match<Either<CountryException, Unit>>(
             c => c.Id.Equals(currentCountryId) ? Unit.Default : new CountryAlreadyExistException(c.Id),
