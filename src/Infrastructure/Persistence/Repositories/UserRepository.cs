@@ -47,9 +47,13 @@ namespace Infrastructure.Persistence.Repositories
         {
             var user = await context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+                .FirstOrDefaultAsync(
+                    u => EF.Functions.ILike(u.Email, email),
+                    cancellationToken);
+
             return user == null ? Option<User>.None : Option<User>.Some(user);
         }
+
 
         public async Task<Option<User>> GetByIdAsync(UserId id, CancellationToken cancellationToken)
         {
@@ -63,11 +67,17 @@ namespace Infrastructure.Persistence.Repositories
 
         public async Task<IReadOnlyList<User>> GetByIdsAsync(IReadOnlyList<UserId> userIds, CancellationToken cancellationToken)
         {
-            var ids = userIds.Select(x => x.Value).ToList();
+            var idValues = userIds.Select(x => x.Value).ToList();
+
             return await context.Users
-                .Where(u => ids.Contains(u.Id.Value))
                 .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                .ToListAsync(cancellationToken)        // ✅ спочатку тягнемо все в пам’ять
+                .ContinueWith(t =>
+                    (IReadOnlyList<User>)t.Result
+                        .Where(u => idValues.Contains(u.Id.Value))
+                        .ToList(),
+                    cancellationToken);
         }
+
     }
 }

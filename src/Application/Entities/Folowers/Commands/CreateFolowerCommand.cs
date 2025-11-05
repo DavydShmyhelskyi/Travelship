@@ -4,6 +4,8 @@ using Domain.Followers;
 using Domain.Users;
 using LanguageExt;
 using MediatR;
+using static LanguageExt.Prelude;
+using Unit = LanguageExt.Unit;
 
 namespace Application.Entities.Followers.Commands;
 
@@ -13,7 +15,9 @@ public record CreateFollowerCommand : IRequest<Either<FollowerException, Followe
     public required Guid FollowedUserId { get; init; }
 }
 
-public class CreateFollowerCommandHandler(IFollowerRepository followerRepository)
+public class CreateFollowerCommandHandler(
+    IFollowerRepository followerRepository,
+    IUserRepository userRepository)
     : IRequestHandler<CreateFollowerCommand, Either<FollowerException, Follower>>
 {
     public async Task<Either<FollowerException, Follower>> Handle(
@@ -23,30 +27,58 @@ public class CreateFollowerCommandHandler(IFollowerRepository followerRepository
         var followerId = new UserId(request.FollowerUserId);
         var followedId = new UserId(request.FollowedUserId);
 
-        if (followerId == followedId)
-        {
-            return new CannotFollowYourselfException(followerId);
-        }
-
-        var existing = await followerRepository.GetByIdsAsync(followerId, followedId, cancellationToken);
-
-        if (existing.IsSome)
-        {
-            return new FollowerAlreadyExistException(followerId, followedId);
-        }
-
-        return await CreateEntity(followerId, followedId, cancellationToken);
+        return await ValidateNotSelf(followerId, followedId)
+            .BindAsync(_ => EnsureUserExists(followerId, isFollower: true, cancellationToken))
+            .BindAsync(_ => EnsureUserExists(followedId, isFollower: false, cancellationToken))
+            .BindAsync(_ => EnsureRelationNotExists(followerId, followedId, cancellationToken))
+            .BindAsync(_ => CreateEntity(followerId, followedId, cancellationToken));
     }
 
+    // followerId != followedId
+    private static Either<FollowerException, Unit> ValidateNotSelf(UserId followerId, UserId followedId)
+        => followerId == followedId
+            ? new CannotFollowYourselfException(followerId)
+            : Right<FollowerException, Unit>(Unit.Default);
+
+    // користувач існує (для обох: follower та followed)
+    private async Task<Either<FollowerException, Unit>> EnsureUserExists(
+        UserId userId,
+        bool isFollower,
+        CancellationToken ct)
+    {
+        var user = await userRepository.GetByIdAsync(userId, ct);
+
+        return user.Match<Either<FollowerException, Unit>>(
+            _ => Right<FollowerException, Unit>(Unit.Default),
+            () => isFollower
+                ? new FollowerUserNotFoundException(userId)
+                : new FollowedUserNotFoundException(userId));
+    }
+
+    // зв’язок ще не існує
+    private async Task<Either<FollowerException, Unit>> EnsureRelationNotExists(
+        UserId followerId,
+        UserId followedId,
+        CancellationToken ct)
+    {
+        var existing = await followerRepository.GetByIdsAsync(followerId, followedId, ct);
+
+        // якщо репозиторій повертає Option<Follower>
+        return existing.Match<Either<FollowerException, Unit>>(
+            _ => new FollowerAlreadyExistException(followerId, followedId),
+            () => Right<FollowerException, Unit>(Unit.Default));
+    }
+
+    // створення
     private async Task<Either<FollowerException, Follower>> CreateEntity(
         UserId followerId,
         UserId followedId,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         try
         {
-            var follower = Follower.New(followerId, followedId);
-            var created = await followerRepository.AddAsync(follower, cancellationToken);
+            var entity = Follower.New(followerId, followedId);
+            var created = await followerRepository.AddAsync(entity, ct);
             return created;
         }
         catch (Exception ex)

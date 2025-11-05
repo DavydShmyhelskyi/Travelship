@@ -18,13 +18,29 @@ public record CreateUserCommand : IRequest<Either<UserException, User>>
     public Guid? CityId { get; init; }
 }
 
-public class CreateUserCommandHandler(IUserRepository userRepository)
+public class CreateUserCommandHandler(
+    IUserRepository userRepository,
+    IRoleRepository roleRepository,
+    ICityRepository cityRepository)
     : IRequestHandler<CreateUserCommand, Either<UserException, User>>
 {
     public async Task<Either<UserException, User>> Handle(
         CreateUserCommand request,
         CancellationToken cancellationToken)
     {
+        var roleId = new RoleId(request.RoleId);
+        var role = await roleRepository.GetByIdAsync(roleId, cancellationToken);
+        if (role.IsNone)
+            return new RoleForUserNotFoundException(UserId.Empty(), roleId);
+
+        if (request.CityId.HasValue)
+        {
+            var cityId = new CityId(request.CityId.Value);
+            var city = await cityRepository.GetByIdAsync(cityId, cancellationToken);
+            if (city.IsNone)
+                return new CityForUserNotFoundException(UserId.Empty(), cityId);
+        }
+
         var existingByEmail = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
 
         return await existingByEmail.MatchAsync(

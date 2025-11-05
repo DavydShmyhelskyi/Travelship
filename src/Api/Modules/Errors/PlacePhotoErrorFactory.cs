@@ -12,8 +12,9 @@ public static class PlacePhotoErrorFactory
             {
                 PlacePhotoAlreadyExistException => StatusCodes.Status409Conflict,
                 PlacePhotoNotFoundException => StatusCodes.Status404NotFound,
+                PlaceNotFoundForPhotoException => StatusCodes.Status404NotFound,
                 UnhandledPlacePhotoException => StatusCodes.Status500InternalServerError,
-                _ => throw new NotImplementedException("PlacePhoto error handler not implemented")
+                _ => StatusCodes.Status500InternalServerError
             }
         };
 }

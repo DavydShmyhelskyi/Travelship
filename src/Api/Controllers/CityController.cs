@@ -4,7 +4,7 @@ using Application.Entities.Cities.Commands;
 using Application.Common.Interfaces.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Cities;
+using Api.Services.Abstract;
 
 namespace Api.Controllers;
 
@@ -12,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class CitiesController(
     ICityQueries cityQueries,
+    ICitiesControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -19,6 +20,18 @@ public class CitiesController(
     {
         var cities = await cityQueries.GetAllAsync(cancellationToken);
         return cities.Select(CityDto.FromDomainModel).ToList();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<CityDto>> Get(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<CityDto>>(
+            c => c,
+            () => NotFound());
     }
 
     [HttpPost]

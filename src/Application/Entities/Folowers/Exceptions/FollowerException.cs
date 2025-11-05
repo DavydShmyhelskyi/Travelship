@@ -23,3 +23,11 @@ public class UnhandledFollowerException(UserId followerUserId, UserId followedUs
 
 public class CannotFollowYourselfException(UserId userId)
     : FollowerException(userId, userId, "A user cannot follow themselves.");
+
+public class FollowerUserNotFoundException(UserId followerUserId)
+    : FollowerException(followerUserId, UserId.Empty(),
+        $"Follower user not found: {followerUserId}");
+
+public class FollowedUserNotFoundException(UserId followedUserId)
+    : FollowerException(UserId.Empty(), followedUserId,
+        $"Followed user not found: {followedUserId}");

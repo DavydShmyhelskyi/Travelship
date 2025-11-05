@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Roles.Commands;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class RolesController(
     IRoleQueries roleQueries,
+    IRoleControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -18,6 +20,18 @@ public class RolesController(
     {
         var roles = await roleQueries.GetAllAsync(cancellationToken);
         return roles.Select(RoleDto.FromDomainModel).ToList();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<RoleDto>> Get(
+    [FromRoute] Guid id,
+    CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<RoleDto>>(
+            r => r,
+            () => NotFound());
     }
 
     [HttpPost]

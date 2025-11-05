@@ -1,22 +1,22 @@
 ﻿using Domain.PlacePhotos;
-using Tests.Data.Places;
+using Domain.Places;
 
 namespace Tests.Data.PlacePhotos
 {
     public static class PlacePhotosData
     {
-        public static PlacePhoto FirstTestPhoto() =>
+        public static PlacePhoto FirstTestPhoto(Place place) =>
             PlacePhoto.New(
                 new byte[] { 0x42, 0x24, 0x66 }, // умовне зображення
                 "Test Photo 1",
-                PlacesData.FirstTestPlace().Id
+                place.Id
             );
 
-        public static PlacePhoto SecondTestPhoto() =>
+        public static PlacePhoto SecondTestPhoto(Place place) =>
             PlacePhoto.New(
                 new byte[] { 0x99, 0xAA, 0x77 },
                 "Test Photo 2",
-                PlacesData.SecondTestPlace().Id
+                place.Id
             );
     }
 }

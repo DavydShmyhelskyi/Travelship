@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Users.Commands;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class UsersController(
     IUserQueries userQueries,
+    IUserControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -19,6 +21,19 @@ public class UsersController(
         var users = await userQueries.GetAllAsync(cancellationToken);
         return users.Select(UserDto.FromDomainModel).ToList();
     }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<UserDto>> Get(
+    [FromRoute] Guid id,
+    CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<UserDto>>(
+            r => r,
+            () => NotFound());
+    }
+
 
     [HttpPost]
     public async Task<ActionResult<UserDto>> CreateUser(

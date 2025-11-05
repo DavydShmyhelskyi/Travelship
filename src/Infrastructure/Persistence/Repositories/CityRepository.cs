@@ -39,11 +39,12 @@ public class CityRepository(ApplicationDbContext context) : ICityRepository, ICi
         var city = await context.Cities
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                c => c.Title == title && c.CountryId == countryId,
+                c => EF.Functions.ILike(c.Title, title) && c.CountryId == countryId,
                 cancellationToken);
 
-        return city ?? Option<City>.None;
+        return city is not null ? city : Option<City>.None;
     }
+
 
     public async Task<Option<City>> GetByIdAsync(CityId id, CancellationToken cancellationToken)
     {

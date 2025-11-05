@@ -1,4 +1,6 @@
 ﻿using Domain.Feedbacks;
+using Domain.Places;
+using Domain.Users;
 
 namespace Application.Entities.Feedbacks.Exceptions;
 
@@ -16,3 +18,8 @@ public class FeedbackAlreadyExistException(FeedbackId feedbackId)
 
 public class UnhandledFeedbackException(FeedbackId feedbackId, Exception? innerException = null)
     : FeedbackException(feedbackId, "Unexpected error occurred", innerException);
+public class FeedbackUserNotFoundException(UserId userId)
+    : FeedbackException(FeedbackId.Empty(), $"User not found under id {userId}");
+
+public class FeedbackPlaceNotFoundException(PlaceId placeId)
+    : FeedbackException(FeedbackId.Empty(), $"Place not found under id {placeId}");

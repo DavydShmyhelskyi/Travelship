@@ -10,6 +10,7 @@ public class CreatePlacePhotoCommandValidator : AbstractValidator<CreatePlacePho
             .NotEmpty().WithMessage("Photo is required.");
 
         RuleFor(x => x.Description)
+            .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(500).WithMessage("Description must be less than 500 characters.");
 
         RuleFor(x => x.PlaceId)

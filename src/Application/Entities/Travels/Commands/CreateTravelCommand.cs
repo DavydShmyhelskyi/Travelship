@@ -19,12 +19,13 @@ public class CreateTravelCommand : IRequest<Either<TravelException, Travel>>
     public bool IsDone { get; init; }
     public required IReadOnlyList<Guid> Places { get; init; }
     public required IReadOnlyList<Guid> Members { get; init; }
-    public required Guid UserId { get; set; } // власник подорожі
+    public required Guid UserId { get; set; }
 }
 
 public class CreateTravelCommandHandler(
     ITravelRepository travelRepository,
-    IUserRepository userRepository)
+    IUserRepository userRepository,
+    IPlaceRepository placeRepository)
     : IRequestHandler<CreateTravelCommand, Either<TravelException, Travel>>
 {
     public async Task<Either<TravelException, Travel>> Handle(CreateTravelCommand request, CancellationToken cancellationToken)
@@ -33,20 +34,70 @@ public class CreateTravelCommandHandler(
 
         return await existingTravel.MatchAsync(
             t => new TravelAlreadyExistsException(t.Id),
-            () => ValidateMembers(request, cancellationToken)
-                .BindAsync(_ => CreateEntity(request, cancellationToken))
+            async () =>
+            {
+                var ownerCheck = await ValidateOwnerExists(request, cancellationToken);
+                return await ownerCheck.MatchAsync<Either<TravelException, Travel>>(
+                    Left: err => err,
+                    RightAsync: async _ =>
+                    {
+                        var placesResult = await ValidatePlaces(request, cancellationToken);
+                        return await placesResult.MatchAsync<Either<TravelException, Travel>>(
+                            Left: err => err,
+                            RightAsync: async _ =>
+                            {
+                                var membersResult = await ValidateMembers(request, cancellationToken);
+                                return await membersResult.MatchAsync<Either<TravelException, Travel>>(
+                                    Left: err => err,
+                                    RightAsync: async _ => await CreateEntity(request, cancellationToken)
+                                );
+                            });
+                    });
+            });
+    }
+
+    private async Task<Either<TravelException, Unit>> ValidateOwnerExists(
+        CreateTravelCommand request,
+        CancellationToken cancellationToken)
+    {
+        var owner = await userRepository.GetByIdAsync(new UserId(request.UserId), cancellationToken);
+
+        return await owner.MatchAsync(
+            Some: _ => Task.FromResult<Either<TravelException, Unit>>(Unit.Default),
+            None: () => Task.FromResult<Either<TravelException, Unit>>(
+                new MembersNotFoundException(TravelId.New(), new List<Guid> { request.UserId }))
         );
+    }
+
+
+    private async Task<Either<TravelException, Unit>> ValidatePlaces(
+        CreateTravelCommand request,
+        CancellationToken cancellationToken)
+    {
+        var existingPlaces = await placeRepository.GetByIdsAsync(
+            request.Places.Select(x => new PlaceId(x)).ToList(),
+            cancellationToken);
+
+        var missing = request.Places
+            .Where(x => existingPlaces.All(p => p.Id.Value != x))
+            .ToList();
+
+        return missing.Any()
+            ? new PlacesNotFoundException(TravelId.New(), missing)
+            : Unit.Default;
     }
 
     private async Task<Either<TravelException, Unit>> ValidateMembers(
         CreateTravelCommand request,
         CancellationToken cancellationToken)
     {
+        if (request.Members == null || !request.Members.Any())
+            return new MembersNotFoundException(TravelId.Empty(), new List<Guid>());
+
         var allMemberIds = request.Members.Append(request.UserId).Distinct().ToList();
         var existingMembers = await userRepository.GetByIdsAsync(
             allMemberIds.Select(x => new UserId(x)).ToList(),
-            cancellationToken
-        );
+            cancellationToken);
 
         var missing = allMemberIds
             .Where(x => existingMembers.All(e => e.Id.Value != x))
@@ -56,6 +107,7 @@ public class CreateTravelCommandHandler(
             ? new MembersNotFoundException(TravelId.Empty(), missing)
             : Unit.Default;
     }
+
 
     private async Task<Either<TravelException, Travel>> CreateEntity(
         CreateTravelCommand request,
@@ -70,7 +122,7 @@ public class CreateTravelCommandHandler(
                 .ToList();
 
             var members = request.Members
-                .Append(request.UserId) // власник теж учасник
+                .Append(request.UserId)
                 .Distinct()
                 .Select(x => UserTravel.New(new UserId(x), travelId))
                 .ToList();
@@ -90,9 +142,13 @@ public class CreateTravelCommandHandler(
             var created = await travelRepository.AddAsync(travel, cancellationToken);
             return created;
         }
+        catch (TravelException tex)
+        {
+            return tex;
+        }
         catch (Exception ex)
         {
-            return new UnhandledTravelException(TravelId.Empty(), ex);
+            return new UnhandledTravelException(TravelId.New(), ex);
         }
     }
 }

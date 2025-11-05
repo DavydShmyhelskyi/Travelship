@@ -46,5 +46,13 @@ public static class SetupModule
     private static void AddControllerServices(this IServiceCollection services)
     {
         services.AddScoped<ICountriesControllerService, CountriesControllerService>();
+        services.AddScoped<ICitiesControllerService, CitiesControllerService>();
+        services.AddScoped<IRoleControllerService, RoleControllerService>();
+        services.AddScoped<IUserControllerService, UserControllerService>();
+        services.AddScoped<IFollowerControllerService, FollowerControllerService>();
+        services.AddScoped<IPlaceControllerService, PlaceControllerService>();
+        services.AddScoped<IPlacePhotoControllerService, PlacePhotoControllerService>();
+        services.AddScoped<IFeedbackControllerService, FeedbackControllerService>();
+        services.AddScoped<ITravelControllerService, TravelControllerService>();
     }
 }

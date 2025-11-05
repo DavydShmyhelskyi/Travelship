@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Repositories;
+﻿using Application.Common.Interfaces.Queries;
+using Application.Common.Interfaces.Repositories;
 using Application.Entities.Cities.Exceptions;
 using Domain.Cities;
 using Domain.Countries;
@@ -13,7 +14,8 @@ public record CreateCityCommand : IRequest<Either<CityException, City>>
     public required Guid CountryId { get; init; }
 }
 
-public class CreateCityCommandHandler(ICityRepository cityRepository)
+public class CreateCityCommandHandler(ICityRepository cityRepository,
+    ICountryQueries countryQueries)
     : IRequestHandler<CreateCityCommand, Either<CityException, City>>
 {
     public async Task<Either<CityException, City>> Handle(
@@ -21,6 +23,10 @@ public class CreateCityCommandHandler(ICityRepository cityRepository)
         CancellationToken cancellationToken)
     {
         var countryId = new CountryId(request.CountryId);
+
+        var country = await countryQueries.GetByIdAsync(countryId, cancellationToken);
+        if (country.IsNone)
+            return new CountryNotFoundForCityException(countryId);
 
         var existingCity = await cityRepository.GetByTitleAsync(request.Title, countryId, cancellationToken);
 

@@ -34,10 +34,13 @@ public class PlaceRepository(ApplicationDbContext context)
     {
         var place = await context.Places
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Title == title, cancellationToken);
+            .FirstOrDefaultAsync(
+                x => EF.Functions.ILike(x.Title, title),
+                cancellationToken);
 
         return place is null ? Option<Place>.None : place;
     }
+
 
     public async Task<Option<Place>> GetByIdAsync(PlaceId id, CancellationToken cancellationToken)
     {

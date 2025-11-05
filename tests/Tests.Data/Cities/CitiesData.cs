@@ -1,14 +1,14 @@
 ﻿using Domain.Cities;
-using Tests.Data.Countries;
+using Domain.Countries;
 
 namespace Tests.Data.Cities
 {
     public static class CitiesData
     {
-        public static City FirstTestCity() =>
-            City.New("First Test City", CountriesData.FirstTestCountry().Id);
+        public static City FirstTestCity(Country country) =>
+            City.New("Paris", country.Id);
 
-        public static City SecondTestCity() =>
-            City.New("Second Test City", CountriesData.SecondTestCountry().Id);
+        public static City SecondTestCity(Country country) =>
+            City.New("New York", country.Id);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.PlacePhotos;
+using Domain.Places;
 
 namespace Application.Entities.PlacePhotos.Exceptions;
 
@@ -16,3 +17,6 @@ public class PlacePhotoAlreadyExistException(PlacePhotoId placePhotoId)
 
 public class UnhandledPlacePhotoException(PlacePhotoId placePhotoId, Exception? innerException = null)
     : PlacePhotoException(placePhotoId, "Unexpected error occurred", innerException);
+
+public class PlaceNotFoundForPhotoException(PlaceId placeId)
+    : PlacePhotoException(PlacePhotoId.Empty(), $"Place not found for photo. PlaceId: {placeId}");

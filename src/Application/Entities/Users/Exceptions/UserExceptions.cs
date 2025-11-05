@@ -1,3 +1,5 @@
+using Domain.Cities;
+using Domain.Roles;
 using Domain.Users;
 
 namespace Application.Entities.Users.Exceptions;
@@ -24,3 +26,9 @@ public class UnhandledUserException(UserId userId, Exception? innerException = n
 
 public class InvalidUserPasswordException(UserId userId)
     : UserException(userId, "Invalid current password.");
+
+public class RoleForUserNotFoundException(UserId userId, RoleId roleId)
+    : UserException(userId, $"Role with id {roleId} not found for user {userId}");
+
+public class CityForUserNotFoundException(UserId userId, CityId cityId)
+    : UserException(userId, $"City with id {cityId} not found for user {userId}");

@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Followers.Commands;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class FollowersController(
     IFollowerQueries followerQueries,
+    IFollowerControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -18,6 +20,19 @@ public class FollowersController(
     {
         var followers = await followerQueries.GetAllAsync(cancellationToken);
         return followers.Select(FollowerDto.FromDomainModel).ToList();
+    }
+    [HttpGet("{followerId:guid}/{followedId:guid}")]
+    public async Task<ActionResult<FollowerDto>> Get(
+        [FromRoute] Guid followerId,
+        [FromRoute] Guid followedId,
+        CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(followerId, followedId, cancellationToken);
+
+        return entity.Match<ActionResult<FollowerDto>>(
+            f => f,
+            () => NotFound()
+        );
     }
 
     [HttpPost]
@@ -37,20 +52,21 @@ public class FollowersController(
             e => e.ToObjectResult());
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<FollowerDto>> DeleteFollower(
-        [FromBody] CreateFollowerDto request,
+    [HttpDelete("{followerId:guid}/{followedId:guid}")]
+    public async Task<ActionResult> DeleteFollower(
+        [FromRoute] Guid followerId,
+        [FromRoute] Guid followedId,
         CancellationToken cancellationToken)
     {
         var command = new DeleteFollowerCommand
         {
-            FollowerUserId = request.FollowerUserId,
-            FollowedUserId = request.FollowedUserId
+            FollowerUserId = followerId,
+            FollowedUserId = followedId
         };
 
         var result = await sender.Send(command, cancellationToken);
-        return result.Match<ActionResult<FollowerDto>>(
-            f => FollowerDto.FromDomainModel(f),
+        return result.Match<ActionResult>(
+            _ => NoContent(),
             e => e.ToObjectResult());
     }
 }

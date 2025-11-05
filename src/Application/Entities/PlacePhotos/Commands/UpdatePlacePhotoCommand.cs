@@ -37,7 +37,10 @@ public class UpdatePlacePhotoCommandHandler(IPlacePhotoRepository placePhotoRepo
         try
         {
             placePhoto.Update(request.Photo, request.Description);
-            return await placePhotoRepository.UpdateAsync(placePhoto, cancellationToken);
+            placePhoto.ChangeVisibility(request.IsShown);
+
+            var updated = await placePhotoRepository.UpdateAsync(placePhoto, cancellationToken);
+            return updated;
         }
         catch (Exception ex)
         {

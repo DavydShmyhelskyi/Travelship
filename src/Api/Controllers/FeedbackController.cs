@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Feedbacks.Commands;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class FeedbacksController(
     IFeedbackQueries feedbackQueries,
+    IFeedbackControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -18,6 +20,18 @@ public class FeedbacksController(
     {
         var feedbacks = await feedbackQueries.GetAllAsync(cancellationToken);
         return feedbacks.Select(FeedbackDto.FromDomainModel).ToList();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<FeedbackDto>> Get(
+    [FromRoute] Guid id,
+    CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<FeedbackDto>>(
+            c => c,
+            () => NotFound());
     }
 
     [HttpPost]

@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.PlacePhotos.Commands;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class PlacePhotosController(
     IPlacePhotoQueries placePhotoQueries,
+    IPlacePhotoControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -18,6 +20,18 @@ public class PlacePhotosController(
     {
         var photos = await placePhotoQueries.GetAllAsync(cancellationToken);
         return photos.Select(PlacePhotoDto.FromDomainModel).ToList();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<PlacePhotoDto>> Get(
+    [FromRoute] Guid id,
+    CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<PlacePhotoDto>>(
+            pp => pp,
+            () => NotFound());
     }
 
     [HttpPost]

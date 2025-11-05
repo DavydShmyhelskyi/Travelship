@@ -1,4 +1,5 @@
 using Domain.Cities;
+using Domain.Countries;
 
 namespace Application.Entities.Cities.Exceptions;
 
@@ -13,6 +14,9 @@ public class CityAlreadyExistException(CityId cityId)
 
 public class CityNotFoundException(CityId cityId)
     : CityException(cityId, $"City not found under id {cityId}");
+
+public class CountryNotFoundForCityException(CountryId countryId)
+    : CityException(CityId.Empty(), $"Country with id {countryId} does not exist");
 
 public class UnhandledCityException(CityId cityId, Exception? innerException = null)
     : CityException(cityId, "Unexpected error occurred", innerException);

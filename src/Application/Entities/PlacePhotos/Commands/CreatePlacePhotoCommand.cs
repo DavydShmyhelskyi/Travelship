@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces.Repositories;
+﻿using Application.Common.Interfaces.Queries;
+using Application.Common.Interfaces.Repositories;
 using Application.Entities.PlacePhotos.Exceptions;
 using Domain.PlacePhotos;
 using Domain.Places;
@@ -13,22 +14,33 @@ public record CreatePlacePhotoCommand : IRequest<Either<PlacePhotoException, Pla
     public required string Description { get; init; }
     public required Guid PlaceId { get; init; }
 }
-
-public class CreatePlacePhotoCommandHandler(IPlacePhotoRepository placePhotoRepository)
+public class CreatePlacePhotoCommandHandler(
+    IPlacePhotoRepository placePhotoRepository,
+    IPlaceRepository placeRepository)
     : IRequestHandler<CreatePlacePhotoCommand, Either<PlacePhotoException, PlacePhoto>>
 {
     public async Task<Either<PlacePhotoException, PlacePhoto>> Handle(
         CreatePlacePhotoCommand request,
         CancellationToken cancellationToken)
     {
+        var placeId = new PlaceId(request.PlaceId);
+
+        var place = await placeRepository.GetByIdAsync(placeId, cancellationToken);
+        if (place.IsNone)
+            return new PlaceNotFoundForPhotoException(placeId);
+
+        return await CreateEntity(request, placeId, cancellationToken);
+    }
+
+    private async Task<Either<PlacePhotoException, PlacePhoto>> CreateEntity(
+        CreatePlacePhotoCommand request,
+        PlaceId placeId,
+        CancellationToken cancellationToken)
+    {
         try
         {
-            var placePhoto = PlacePhoto.New(
-                request.Photo,
-                request.Description,
-                new PlaceId(request.PlaceId));
-
-            var created = await placePhotoRepository.AddAsync(placePhoto, cancellationToken);
+            var entity = PlacePhoto.New(request.Photo, request.Description, placeId);
+            var created = await placePhotoRepository.AddAsync(entity, cancellationToken);
             return created;
         }
         catch (Exception ex)
@@ -37,3 +49,4 @@ public class CreatePlacePhotoCommandHandler(IPlacePhotoRepository placePhotoRepo
         }
     }
 }
+

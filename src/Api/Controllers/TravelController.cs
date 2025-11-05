@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Travels.Commands;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class TravelsController(
     ITravelQueries travelQueries,
+    ITravelControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -18,6 +20,18 @@ public class TravelsController(
     {
         var travels = await travelQueries.GetAllAsync(cancellationToken);
         return travels.Select(TravelDto.FromDomainModel).ToList();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<TravelDto>> Get(
+    [FromRoute] Guid id,
+    CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<TravelDto>>(
+            t => t,
+            () => NotFound());
     }
 
     [HttpPost]
@@ -32,18 +46,26 @@ public class TravelsController(
             EndDate = request.EndDate,
             Description = request.Description,
             Image = request.Image,
-            IsDone = false, // створена подорож ще не завершена
+            IsDone = false,
             Places = request.Places,
             Members = request.Members,
             UserId = request.UserId
         };
 
-        var result = await sender.Send(command, cancellationToken);
+        try
+        {
+            var result = await sender.Send(command, cancellationToken);
 
-        return result.Match<ActionResult<TravelDto>>(
-            t => TravelDto.FromDomainModel(t),
-            e => e.ToObjectResult());
+            return result.Match<ActionResult<TravelDto>>(
+                t => TravelDto.FromDomainModel(t),
+                e => e.ToObjectResult());
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return ex.ToObjectResult(); // повертає 400
+        }
     }
+
 
     [HttpPut]
     public async Task<ActionResult<TravelDto>> UpdateTravel(

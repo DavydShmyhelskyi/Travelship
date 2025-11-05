@@ -1,5 +1,6 @@
 ﻿using Api.Dtos;
 using Api.Modules.Errors;
+using Api.Services.Abstract;
 using Application.Common.Interfaces.Queries;
 using Application.Entities.Places.Commands;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Api.Controllers;
 [ApiController]
 public class PlacesController(
     IPlaceQueries placeQueries,
+    IPlaceControllerService controllerService,
     ISender sender) : ControllerBase
 {
     [HttpGet]
@@ -20,6 +22,17 @@ public class PlacesController(
         return places.Select(PlaceDto.FromDomainModel).ToList();
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<PlaceDto>> Get(
+    [FromRoute] Guid id,
+    CancellationToken cancellationToken)
+    {
+        var entity = await controllerService.Get(id, cancellationToken);
+
+        return entity.Match<ActionResult<PlaceDto>>(
+            p => p,
+            () => NotFound());
+    }
     [HttpPost]
     public async Task<ActionResult<PlaceDto>> CreatePlace(
         [FromBody] CreatePlaceDto request,

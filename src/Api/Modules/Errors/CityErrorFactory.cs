@@ -12,6 +12,7 @@ public static class CityErrorFactory
             {
                 CityAlreadyExistException => StatusCodes.Status409Conflict,
                 CityNotFoundException => StatusCodes.Status404NotFound,
+                CountryNotFoundForCityException => StatusCodes.Status404NotFound,
                 UnhandledCityException => StatusCodes.Status500InternalServerError,
                 _ => throw new NotImplementedException("City error handler not implemented")
             }

@@ -1,8 +1,6 @@
 ﻿using Application.Entities.Users.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Modules.Errors;
-
 public static class UserErrorFactory
 {
     public static ObjectResult ToObjectResult(this UserException error)
@@ -10,11 +8,22 @@ public static class UserErrorFactory
         {
             StatusCode = error switch
             {
-                UserAlreadyExistsException or UserEmailAlreadyExistsException or UserNickNameAlreadyExistsException
+                UserAlreadyExistsException or
+                UserEmailAlreadyExistsException or
+                UserNickNameAlreadyExistsException
                     => StatusCodes.Status409Conflict,
-                UserNotFoundException => StatusCodes.Status404NotFound,
-                InvalidUserPasswordException => StatusCodes.Status400BadRequest,
-                UnhandledUserException => StatusCodes.Status500InternalServerError,
+
+                UserNotFoundException or
+                RoleForUserNotFoundException or
+                CityForUserNotFoundException
+                    => StatusCodes.Status404NotFound,
+
+                InvalidUserPasswordException
+                    => StatusCodes.Status400BadRequest,
+
+                UnhandledUserException
+                    => StatusCodes.Status500InternalServerError,
+
                 _ => throw new NotImplementedException("User error handler not implemented")
             }
         };
